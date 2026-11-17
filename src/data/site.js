@@ -7,8 +7,10 @@ export const site = {
   legalName: "Silvercrest Outdoor Spaces LLC",
   phone: data.phone || "+1 (702) 812-0784",
   phoneHref: data.phoneHref || "tel:+17028120784",
-  serviceArea: "Las Vegas & Henderson, NV",
-  serviceAreaNote: "(and surrounding areas)"
+  email: data.email || "",
+  serviceArea: data.location || "Las Vegas & Henderson, NV",
+  serviceAreaNote: "(and surrounding areas)",
+  socials: data.socials || {}
 }
 
 /** Absolute URL for an internal path, e.g. url("/contact/"). */

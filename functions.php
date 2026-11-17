@@ -2,6 +2,23 @@
 
 define('SILVERCREST_PHONE', '+1 (702) 812-0784');
 define('SILVERCREST_PHONE_HREF', 'tel:+17028120784');
+define('SILVERCREST_LOCATION', 'Las Vegas & Henderson, NV');
+
+// TODO: corporate email not purchased yet (questionnaire) — placeholder until confirmed.
+define('SILVERCREST_EMAIL', 'info@silvercrestoutdoorspaces.com');
+
+// Social profiles. Empty URLs are hidden in the topbar.
+// TODO: Instagram is still under the old name (@mendoza.lawnservices) — validate/rename before launch (brief, section 01).
+// TODO: Facebook, TikTok, YouTube and Google are DEMO links (platform home pages) — replace or empty before launch.
+function silvercrest_socials() {
+  return array(
+    'facebook'  => 'https://www.facebook.com/',
+    'instagram' => 'https://www.instagram.com/mendoza.lawnservices/',
+    'tiktok'    => 'https://www.tiktok.com/',
+    'youtube'   => 'https://www.youtube.com/',
+    'google'    => 'https://www.google.com/business/', // Google Business Profile
+  );
+}
 
 require get_theme_file_path('/inc/template-helpers.php');
 
@@ -17,6 +34,9 @@ function silvercrest_load_assets() {
     'homeUrl'   => home_url('/'),
     'phone'     => SILVERCREST_PHONE,
     'phoneHref' => SILVERCREST_PHONE_HREF,
+    'email'     => SILVERCREST_EMAIL,
+    'location'  => SILVERCREST_LOCATION,
+    'socials'   => array_filter(silvercrest_socials()),
   ));
 }
 
