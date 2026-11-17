@@ -1,9 +1,7 @@
 /*
-  Theme Name: Brad&rsquo;s Boilerplate Theme Tailwind
-  Author: Brad
-  Author URI: https://github.com/LearnWebCode
+  Theme Name: Silvercrest Outdoor Spaces
+  Description: Custom theme for Silvercrest Outdoor Spaces LLC.
+  Version: 1.0.0
 */
 
-/* This file only exists for the sake of WordPress recognizing our theme / theme name etc... */
-
-/* We do not include CSS here and also WordPress will not load this file on the front-end */
+/* WordPress only uses this file to recognize the theme. Styles live in src/index.css (Tailwind). */

@@ -6,8 +6,8 @@
     <?php wp_head(); ?>
   </head>
   <body <?php body_class(); ?>>
-    <div class="bg-gray-300">
-      <div class="max-w-4xl mx-auto mb-5 px-4">
-        <h1 class="text-3xl py-10"><a href="<?php echo get_home_url(); ?>" class="hover:text-blue-500">Welcome To Our Header!</a></h1>
-      </div>
-    </div>
+    <?php wp_body_open(); ?>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-forest focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
+
+    <!-- React: src/components/Navbar.js -->
+    <div id="silvercrest-navbar" class="sticky top-0 z-50 min-h-18"></div>

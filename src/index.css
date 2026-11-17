@@ -1,2 +1,54 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/*
+  Brand tokens.
+  EXPLORATORY palette and fonts from the brief (section 12) — NOT approved branding.
+  Replace these values with Ana's final palette and typefaces before launch;
+  every template and component reads from these tokens.
+*/
+@theme {
+  --color-forest: #214d3a;
+  --color-forest-dark: #1a3b2d;
+  --color-sage: #899c86;
+  --color-sand: #e7ddcb;
+  --color-cream: #f7f5ef;
+  --color-graphite: #28312c;
+  --color-bronze: #a8875a;
+
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-graphite antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-forest;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-forest text-white hover:bg-forest-dark;
+  }
+
+  .btn-outline {
+    @apply border-2 border-forest text-forest hover:bg-forest hover:text-white;
+  }
+
+  .btn-sand {
+    @apply bg-sand text-forest-dark hover:bg-white;
+  }
+
+  /* Shown by silvercrest_image() until the real project photo is added. */
+  .img-placeholder {
+    @apply flex items-end bg-linear-135 from-sage to-forest p-4 text-xs tracking-wide text-white/70;
+  }
+}
