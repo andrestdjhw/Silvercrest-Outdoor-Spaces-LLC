@@ -20,13 +20,22 @@ function silvercrest_socials() {
   );
 }
 
+// TEMPORARY: Unsplash stock photos fill image slots until real project photos arrive.
+// Set to false (and delete assets/images/_stock/) before launch — the brief requires real projects only.
+define('SILVERCREST_STOCK_IMAGES', true);
+
 require get_theme_file_path('/inc/template-helpers.php');
+require get_theme_file_path('/inc/stock-images.php');
+require get_theme_file_path('/inc/content.php');
+require get_theme_file_path('/inc/projects.php');
+require get_theme_file_path('/inc/routing.php');
+require get_theme_file_path('/inc/contact-form.php');
 
 function silvercrest_load_assets() {
   $asset = include get_theme_file_path('/build/index.asset.php');
 
-  // Exploratory fonts — swap for Ana's approved typefaces (also update src/index.css).
-  wp_enqueue_style('silvercrest-fonts', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap', array(), null);
+  // Archivo with its width axis (condensed headings / extended labels). Swap if Ana delivers the official brand font.
+  wp_enqueue_style('silvercrest-fonts', 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap', array(), null);
   wp_enqueue_style('silvercrest-main', get_theme_file_uri('/build/index.css'), array('silvercrest-fonts'), filemtime(get_theme_file_path('/build/index.css')));
 
   wp_enqueue_script('silvercrest-main', get_theme_file_uri('/build/index.js'), $asset['dependencies'], $asset['version'], true);
@@ -37,6 +46,11 @@ function silvercrest_load_assets() {
     'email'     => SILVERCREST_EMAIL,
     'location'  => SILVERCREST_LOCATION,
     'socials'   => array_filter(silvercrest_socials()),
+    'form'      => array(
+      'endpoint'   => rest_url('silvercrest/v1/consultation'),
+      'privacyUrl' => get_privacy_policy_url(),
+      'options'    => silvercrest_form_options(),
+    ),
   ));
 }
 
@@ -59,18 +73,3 @@ function silvercrest_add_support() {
 }
 
 add_action('after_setup_theme', 'silvercrest_add_support');
-
-// Home SEO title + meta description (brief, section 10).
-function silvercrest_front_page_title($title) {
-  return is_front_page() ? 'Landscape Design & Installation | Silvercrest Outdoor Spaces' : $title;
-}
-
-add_filter('pre_get_document_title', 'silvercrest_front_page_title');
-
-function silvercrest_front_page_meta() {
-  if (is_front_page()) {
-    echo '<meta name="description" content="' . esc_attr('Landscape design, installation, pavers, turf and outdoor improvements in Las Vegas and Henderson. Explore projects and request a consultation.') . '">' . "\n";
-  }
-}
-
-add_action('wp_head', 'silvercrest_front_page_meta', 1);

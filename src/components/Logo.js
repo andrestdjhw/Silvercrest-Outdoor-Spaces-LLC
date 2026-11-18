@@ -1,19 +1,44 @@
-import React from "react"
+import React, { useId } from "react"
 
 /**
- * PROVISIONAL text logo, modeled on the mockup.
- * Replace with Ana's approved logo files once the rebrand is final (brief, section 12).
+ * Silvercrest lockup: mountain-stripes mark + condensed wordmark + extended descriptor.
+ * PROVISIONAL recreation of Ana's logo (built from the brand board, live text + SVG).
+ * Replace with the official SVG files once delivered — keep the same props/sizing.
+ *
+ * variant: "dark" (on light backgrounds) | "light" (on rust/dark backgrounds)
  */
+export function LogoMark({ className = "h-4 w-14" }) {
+  const clipId = useId()
+  return (
+    <svg viewBox="0 0 100 34" className={className} fill="currentColor" aria-hidden="true">
+      <defs>
+        <clipPath id={clipId}>
+          {/* Two desert ridges */}
+          <path d="M4 34C14 21 24 4.5 39 3c8-.8 13 4.5 17 7 4-3.2 8-4.6 13-4 12 1.6 20 15 27 28z" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${clipId})`}>
+        <rect x="0" y="0" width="100" height="14.5" />
+        <rect x="0" y="17.5" width="100" height="3.6" />
+        <rect x="0" y="24" width="100" height="3" />
+        <rect x="0" y="29.8" width="100" height="2.4" />
+      </g>
+      <rect x="0" y="33" width="100" height="1" />
+    </svg>
+  )
+}
+
 export default function Logo({ variant = "dark", className = "" }) {
   const light = variant === "light"
 
   return (
-    <span className={`inline-flex flex-col items-center leading-none ${className}`}>
-      <svg viewBox="0 0 64 16" className="h-3.5 w-14 text-bronze" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden="true">
-        <path d="M2 15L18 4l8 5 10-8 26 14" />
-      </svg>
-      <span className={`mt-0.5 font-serif text-2xl font-semibold tracking-[0.08em] ${light ? "text-cream" : "text-graphite"}`}>SILVERCREST</span>
-      <span className={`mt-1 pl-[0.45em] text-[9px] font-medium tracking-[0.45em] ${light ? "text-cream/70" : "text-graphite/70"}`}>OUTDOOR SPACES</span>
+    <span className={`inline-flex flex-col items-center leading-none ${light ? "text-cream" : "text-ink"} ${className}`}>
+      <LogoMark className="h-3.5 w-12" />
+      <span className="relative mt-1 font-display text-[1.7rem] font-semibold leading-[0.9] tracking-tight [font-variation-settings:'wdth'_62]">
+        SILVERCREST
+        <span className="absolute -right-3 bottom-0 font-sans text-[6px] font-semibold tracking-normal">TM</span>
+      </span>
+      <span className="mt-1 font-wide text-[8.5px] font-medium tracking-[0.22em]">OUTDOOR SPACES</span>
     </span>
   )
 }

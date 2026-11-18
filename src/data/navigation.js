@@ -14,7 +14,7 @@ export const services = [
 export const mainNav = [
   { label: "Home", path: "/" },
   { label: "Landscape Design", path: "/landscape-design/" },
-  { label: "Services", children: services },
+  { label: "Services", path: "/services/", children: services },
   { label: "Projects", path: "/projects/" },
   { label: "Service Areas", path: "/service-areas/" },
   { label: "About", path: "/about/" },

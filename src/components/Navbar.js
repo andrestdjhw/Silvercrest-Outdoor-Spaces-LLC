@@ -1,17 +1,28 @@
 import React, { useEffect, useRef, useState } from "react"
 import Logo from "./Logo"
 import Topbar from "./Topbar"
+import useShowOnScrollUp from "../hooks/useShowOnScrollUp"
 import { ArrowRight, ChevronDown, CloseIcon, MenuIcon, PhoneIcon } from "./Icons"
 import { cta, mainNav } from "../data/navigation"
 import { isCurrent, site, url } from "../data/site"
 
-const isActive = item => (item.children ? item.children.some(child => isCurrent(child.path)) : isCurrent(item.path))
+const isActive = item => isCurrent(item.path) || (item.children || []).some(child => isCurrent(child.path))
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const topbarVisible = useShowOnScrollUp()
+  const [scrolled, setScrolled] = useState(false)
+
+  // Soft shadow once the page scrolls under the header.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useEffect(() => {
     const onKeyDown = e => {
@@ -34,18 +45,22 @@ export default function Navbar() {
   // Lock page scroll behind the open mobile menu.
   useEffect(() => {
     document.body.classList.toggle("overflow-hidden", mobileOpen)
+    // Smooth scroll (motion.js) must pause too, or the page keeps moving behind the menu.
+    if (window.silvercrestLenis) window.silvercrestLenis[mobileOpen ? "stop" : "start"]()
   }, [mobileOpen])
 
   const desktopLink = active =>
-    `relative py-2 text-[13px] font-medium transition-colors xl:text-sm hover:text-forest ${
-      active ? "text-forest after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:bg-forest" : "text-graphite/80"
+    `relative py-2 text-[13px] font-medium transition-colors xl:text-sm hover:text-rust ${
+      active ? "text-rust after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:bg-rust" : "text-ink/80"
     }`
 
   return (
     <>
-      <Topbar />
-      <header className="relative border-b border-sand bg-cream/95 backdrop-blur">
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+      {/* Topbar + navbar move together: slide up by the topbar height (h-9) to hide it */}
+      <div className={`transition-transform duration-300 ease-out ${topbarVisible || mobileOpen ? "" : "md:-translate-y-9"}`}>
+      <Topbar visible={topbarVisible} />
+      <header className={`relative border-b border-sand bg-cream/95 backdrop-blur transition-shadow duration-300 ${scrolled ? "shadow-[0_8px_24px_-12px_rgb(35_26_21/0.25)]" : ""}`}>
+        <div className="container-site flex h-18 items-center justify-between gap-6">
           <div className="flex items-center gap-6 xl:gap-8">
             <a href={url("/")} aria-label={`${site.name} — Home`} className="shrink-0">
               <Logo />
@@ -55,7 +70,7 @@ export default function Navbar() {
 
           {/* Desktop */}
           <nav aria-label="Main" className="hidden flex-1 lg:block">
-            <ul className="flex items-center gap-5 xl:gap-7">
+            <ul className="flex items-center justify-center gap-5 xl:gap-7">
               {mainNav.map(item =>
                 item.children ? (
                   <li
@@ -85,14 +100,19 @@ export default function Navbar() {
                             <a
                               href={url(child.path)}
                               aria-current={isCurrent(child.path) ? "page" : undefined}
-                              className={`block rounded px-3 py-2 text-sm transition-colors hover:bg-cream hover:text-forest ${
-                                isCurrent(child.path) ? "bg-cream text-forest" : "text-graphite/85"
+                              className={`block rounded px-3 py-2 text-sm transition-colors hover:bg-cream hover:text-rust ${
+                                isCurrent(child.path) ? "bg-cream text-rust" : "text-ink/85"
                               }`}
                             >
                               {child.label}
                             </a>
                           </li>
                         ))}
+                        <li className="mt-1 border-t border-sand pt-1">
+                          <a href={url(item.path)} className="flex items-center justify-between rounded px-3 py-2 text-sm font-semibold text-rust transition-colors hover:bg-cream">
+                            View All Services <ArrowRight className="h-4 w-4" />
+                          </a>
+                        </li>
                       </ul>
                     </div>
                   </li>
@@ -114,7 +134,7 @@ export default function Navbar() {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="-mr-2 rounded-md p-2 text-graphite lg:hidden"
+            className="-mr-2 rounded-md p-2 text-ink lg:hidden"
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -126,14 +146,14 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <nav id="mobile-menu" aria-label="Main" className="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-b border-sand bg-cream shadow-lg lg:hidden">
+          <nav id="mobile-menu" aria-label="Main" data-lenis-prevent className="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-b border-sand bg-cream shadow-lg lg:hidden">
             <ul className="px-4 py-4 sm:px-6">
               {mainNav.map(item =>
                 item.children ? (
                   <li key={item.label} className="border-b border-sand/70">
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between py-3 text-left font-medium text-graphite"
+                      className="flex w-full items-center justify-between py-3 text-left font-medium text-ink"
                       aria-expanded={mobileServicesOpen}
                       aria-controls="mobile-services"
                       onClick={() => setMobileServicesOpen(open => !open)}
@@ -143,12 +163,17 @@ export default function Navbar() {
                     </button>
                     {mobileServicesOpen && (
                       <ul id="mobile-services" className="pb-3 pl-4">
+                        <li>
+                          <a href={url(item.path)} className="block py-2 text-sm font-semibold text-rust">
+                            View All Services
+                          </a>
+                        </li>
                         {item.children.map(child => (
                           <li key={child.path}>
                             <a
                               href={url(child.path)}
                               aria-current={isCurrent(child.path) ? "page" : undefined}
-                              className={`block py-2 text-sm ${isCurrent(child.path) ? "text-forest" : "text-graphite/80"}`}
+                              className={`block py-2 text-sm ${isCurrent(child.path) ? "text-rust" : "text-ink/80"}`}
                             >
                               {child.label}
                             </a>
@@ -162,7 +187,7 @@ export default function Navbar() {
                     <a
                       href={url(item.path)}
                       aria-current={isActive(item) ? "page" : undefined}
-                      className={`block py-3 font-medium ${isActive(item) ? "text-forest" : "text-graphite"}`}
+                      className={`block py-3 font-medium ${isActive(item) ? "text-rust" : "text-ink"}`}
                     >
                       {item.label}
                     </a>
@@ -181,6 +206,7 @@ export default function Navbar() {
           </nav>
         )}
       </header>
+      </div>
 
       {/* Discreet sticky CTA on mobile (brief, section 09) */}
       {!mobileOpen && (

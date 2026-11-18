@@ -1,12 +1,29 @@
 import React from "react"
+import { flushSync } from "react-dom"
 import { createRoot } from "react-dom/client"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
+import ContactForm from "./components/ContactForm"
+import initReveal from "./scripts/reveal"
+import initMotion from "./scripts/motion"
 
-const mount = (id, Component) => {
-  const el = document.getElementById(id)
-  if (el) createRoot(el).render(<Component />)
+// Render synchronously so React-built markup (footer giant text, etc.) exists
+// before the motion system scans the page.
+const render = (el, element) => {
+  const root = createRoot(el)
+  flushSync(() => root.render(element))
 }
 
-mount("silvercrest-navbar", Navbar)
-mount("silvercrest-footer", Footer)
+const navbar = document.getElementById("silvercrest-navbar")
+if (navbar) render(navbar, <Navbar />)
+
+const footer = document.getElementById("silvercrest-footer")
+if (footer) render(footer, <Footer />)
+
+// Contact forms: <div data-react="contact-form" data-variant="full|compact"></div>
+document.querySelectorAll('[data-react="contact-form"]').forEach((el, i) => {
+  render(el, <ContactForm variant={el.dataset.variant || "full"} idPrefix={`cf${i}`} />)
+})
+
+initMotion()
+initReveal()
