@@ -56,7 +56,7 @@ get_header(); ?>
   <?php get_template_part('template-parts/faq', null, array(
     'faqs'  => $faqs,
     'title' => 'Planning Your Project',
-    'class' => 'bg-sand/40 py-16 lg:py-20',
+    'class' => 'bg-dune py-16 lg:py-20',
   )); ?>
 
   <?php get_template_part('template-parts/cta-final'); ?>

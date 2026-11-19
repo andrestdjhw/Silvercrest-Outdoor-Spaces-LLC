@@ -18,6 +18,7 @@ function silvercrest_services() {
 
     'landscape-design' => array(
       'label'     => 'Landscape Design',
+      'menu'      => 'Layouts, materials, and planting with purpose',
       'group'     => 'design',
       'icon'      => 'design',
       'h1'        => 'Landscape Design Built Around the Way You Live',
@@ -41,6 +42,7 @@ function silvercrest_services() {
 
     'landscape-installation' => array(
       'label'     => 'Landscape Installation',
+      'menu'      => 'Bringing the design to life, detail by detail',
       'group'     => 'design',
       'icon'      => 'layers',
       'h1'        => 'Landscape Installation with Every Detail in Mind',
@@ -63,6 +65,7 @@ function silvercrest_services() {
 
     'desert-landscaping' => array(
       'label'     => 'Desert Landscaping & Turf Conversion',
+      'menu'      => 'Xeriscape and turf conversion for the desert',
       'short'     => 'Desert Landscaping',
       'group'     => 'design',
       'icon'      => 'cactus',
@@ -98,6 +101,7 @@ function silvercrest_services() {
 
     'paver-installation' => array(
       'label'     => 'Paver Installation',
+      'menu'      => 'Paths, patios, and gathering areas',
       'short'     => 'Pavers & Hardscaping',
       'group'     => 'design',
       'icon'      => 'pavers',
@@ -122,6 +126,7 @@ function silvercrest_services() {
 
     'artificial-turf' => array(
       'label'     => 'Artificial Turf',
+      'menu'      => 'Turf planned as part of the whole yard',
       'group'     => 'design',
       'icon'      => 'turf',
       'h1'        => 'Artificial Turf with a Thoughtful Landscape Plan',
@@ -144,6 +149,7 @@ function silvercrest_services() {
 
     'irrigation-systems' => array(
       'label'     => 'Irrigation Systems',
+      'menu'      => 'Water planned around the landscape',
       'group'     => 'care',
       'icon'      => 'droplet',
       'h1'        => 'Irrigation Planned for the Landscape',
@@ -166,6 +172,7 @@ function silvercrest_services() {
 
     'landscape-lighting' => array(
       'label'     => 'Landscape Lighting',
+      'menu'      => 'Paths and gathering spaces after sunset',
       'group'     => 'care',
       'icon'      => 'lamp',
       'h1'        => 'Landscape Lighting that Changes the Experience',
@@ -187,6 +194,7 @@ function silvercrest_services() {
 
     'tree-palm-services' => array(
       'label'     => 'Tree & Palm Services',
+      'menu'      => 'Planting and care for trees and palms',
       'group'     => 'care',
       'icon'      => 'palm',
       'h1'        => 'Tree & Palm Services for Southern Nevada Properties',
@@ -209,6 +217,7 @@ function silvercrest_services() {
 
     'landscape-maintenance' => array(
       'label'     => 'Landscape Maintenance',
+      'menu'      => 'Care that keeps the design intact',
       'group'     => 'care',
       'icon'      => 'calendar',
       'h1'        => 'Landscape Maintenance that Protects Your Investment',

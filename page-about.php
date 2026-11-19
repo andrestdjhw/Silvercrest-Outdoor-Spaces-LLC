@@ -2,21 +2,23 @@
 /**
  * About — /about/
  * Facts used: founded 2021; formerly Mendoza Lawn Services LLC (identity transition, not a new business);
- * name meaning and values from the brief.
+ * name meaning and values from the brief. Story, mark origin, personality, mission and vision:
+ * brand proposal (828 Marketing Solutions, Nov 2026).
  * VALIDATE before adding: insurance badges (need certificates), NSCB license (never claim "licensed" without number).
  */
 
+// Brand personality: with judgment, responsible, close.
 $values = array(
-  array('title' => 'Responsibility', 'text' => 'We take ownership of the work, from planning to the final walkthrough.'),
-  array('title' => 'Quality',        'text' => 'Details matter. We care about materials, preparation, and a clean finish.'),
-  array('title' => 'Respect',        'text' => 'For your home, your time, your neighbors, and the desert environment.'),
-  array('title' => 'Honesty',        'text' => 'Clear conversations about scope, options, and expectations.'),
+  array('title' => 'Judgment',       'text' => 'We know the ground and explain the why. And when something isn’t worth it, we say so.'),
+  array('title' => 'Responsibility', 'text' => 'We do what we say, we speak up when something changes, and we own the whole result.'),
+  array('title' => 'Respect',        'text' => 'For your home, your time and your money. Warm, direct, and in English or Spanish.'),
+  array('title' => 'Craft',          'text' => 'Stone, pavers, drip and light, set with care. We show the real process and credit our crew.'),
 );
 
 $name_parts = array(
-  array('word' => 'Silver',         'text' => 'A nod to the Silver State. We’re a Nevada company, and our work is rooted here.'),
-  array('word' => 'Crest',          'text' => 'The summit of the ridgeline: the standard of quality we hold ourselves to.'),
-  array('word' => 'Outdoor Spaces', 'text' => 'Yards, patios, and gathering areas: the whole outdoor environment, not just the lawn.'),
+  array('word' => 'The mountain', 'text' => 'Our mark draws Frenchman Mountain, east of the valley, where the sun rises for much of Las Vegas.'),
+  array('word' => 'The strata',   'text' => 'It’s built from horizontal lines: the rock layers of the desert, and the rows of stone and pavers we build with.'),
+  array('word' => 'The M',        'text' => 'Its two summits form a discreet M, for Mendoza: the family this company grew from. The name changed; the roots are still there.'),
 );
 
 get_header(); ?>
@@ -25,7 +27,7 @@ get_header(); ?>
 
   <?php get_template_part('template-parts/page-hero', null, array(
     'title'       => 'About Silvercrest Outdoor Spaces',
-    'intro'       => 'A Southern Nevada company focused on designing and building outdoor spaces that feel right at home in the desert.',
+    'intro'       => 'Same family. Same crew. A new name. We design, build and care for outdoor spaces made for living in the desert.',
     'image'       => 'about/about-hero',
     'alt'         => 'Silvercrest Outdoor Spaces team on a project site',
     'breadcrumbs' => array(array('About', '/about/')),
@@ -37,10 +39,13 @@ get_header(); ?>
       <div>
         <?php silvercrest_section_title('Our Story'); ?>
         <p data-reveal class="mt-6 max-w-xl leading-relaxed text-ink/80">
-          Silvercrest Outdoor Spaces has been creating outdoor spaces for homeowners in Las Vegas and Henderson since 2021.
+          You may have known us as Mendoza Lawn Services. A family business serving the valley since 2021, we grew one referral at a time, from lawn care into the design and installation of complete outdoor spaces in Las Vegas and Henderson.
         </p>
         <p data-reveal class="mt-4 max-w-xl leading-relaxed text-ink/80">
-          You may have known us as Mendoza Lawn Services. As our work grew from landscape care into design and complete outdoor transformations, we adopted a name that better reflects what we do today. Same team, same commitment, with a clearer focus on thoughtfully designed outdoor spaces.
+          Here, many families pay for a yard they barely use: the afternoon sun, the heat and the lack of shade took it from them. We work to give it back. We start with where the sun hits, design shade where it’s needed, choose plants that don’t ask for water the desert doesn’t have, and build with materials that hold up to the summer.
+        </p>
+        <p data-reveal class="mt-4 max-w-xl font-semibold leading-relaxed text-ink">
+          Our work isn’t done at the handoff. It’s done when you’re having dinner outside again.
         </p>
         <div class="mt-8" data-reveal><?php silvercrest_cta_button(); ?></div>
       </div>
@@ -48,10 +53,12 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- The name -->
-  <section class="bg-rust py-16 text-cream lg:py-20">
+  <!-- The mark -->
+  <section class="relative isolate overflow-hidden bg-ember py-16 text-cream lg:py-20">
+    <div class="cross-grid absolute inset-0 -z-10" aria-hidden="true"></div>
     <div class="container-site">
-      <h2 class="text-center font-display text-3xl font-semibold sm:text-4xl">What’s in a Name</h2>
+      <div class="flex justify-center text-peach" data-reveal><?php silvercrest_isotype('h-12 w-36'); ?></div>
+      <h2 class="mt-6 text-center font-display text-4xl font-bold sm:text-5xl">Where Our Mark Comes From</h2>
       <ul class="mt-12 grid gap-10 md:grid-cols-3">
         <?php foreach ($name_parts as $part) : ?>
           <li class="text-center" data-reveal>
@@ -78,7 +85,26 @@ get_header(); ?>
     </div>
   </section>
 
-  <?php get_template_part('template-parts/process-steps', null, array('link' => true)); ?>
+  <!-- Mission & vision + seal -->
+  <section class="bg-dune py-16 lg:py-24">
+    <div class="container-site grid items-center gap-12 lg:grid-cols-12">
+      <div class="flex justify-center lg:col-span-4" data-reveal="zoom">
+        <?php silvercrest_seal('h-56 w-56 sm:h-64 sm:w-64'); ?>
+      </div>
+      <dl class="divide-y divide-ink/15 border-y border-ink/15 lg:col-span-8">
+        <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
+          <dt class="annotation pt-1 text-copper-dark">Mission</dt>
+          <dd class="text-lg leading-relaxed text-ink/85 sm:col-span-3">Design, build and care for outdoor spaces made for living in the desert, with judgment, honesty and a commitment that runs from the first visit to the first summer.</dd>
+        </div>
+        <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
+          <dt class="annotation pt-1 text-copper-dark">Vision</dt>
+          <dd class="text-lg leading-relaxed text-ink/85 sm:col-span-3">To be Southern Nevada’s reference for transforming outdoor spaces, known for proving that a yard designed for the desert gets lived in more and looks better.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <?php get_template_part('template-parts/process-steps', null, array('link' => true, 'class' => 'py-16 lg:py-20')); ?>
 
   <?php get_template_part('template-parts/cta-final'); ?>
 

@@ -29,12 +29,12 @@ get_header(); ?>
         <?php endforeach; ?>
         <div class="mt-8" data-reveal><?php silvercrest_cta_button(); ?></div>
       </div>
-      <?php silvercrest_image("services/{$slug}-overview", $service['label'] . ' detail', 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
+      <?php silvercrest_image("services/{$slug}-overview", $service['label'] . ' detail', 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
     </div>
   </section>
 
   <!-- Highlights -->
-  <section class="bg-sand/40 py-16 lg:py-20">
+  <section class="bg-dune py-16 lg:py-20">
     <div class="container-site">
       <?php silvercrest_section_heading('What We Focus On'); ?>
       <ul class="mt-12 grid gap-8 sm:grid-cols-2 <?php echo count($service['highlights']) === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'; ?>">
@@ -78,7 +78,7 @@ get_header(); ?>
   <?php get_template_part('template-parts/service-cards', null, array(
     'slugs' => $service['related'],
     'title' => 'Related Services',
-    'class' => !empty($service['faqs']) ? 'bg-sand/40 py-16 lg:py-20' : 'py-16 lg:py-20',
+    'class' => !empty($service['faqs']) ? 'bg-dune py-16 lg:py-20' : 'py-16 lg:py-20',
   )); ?>
 
   <?php get_template_part('template-parts/cta-final'); ?>

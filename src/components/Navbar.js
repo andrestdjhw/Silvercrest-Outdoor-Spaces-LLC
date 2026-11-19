@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import Logo from "./Logo"
 import Topbar from "./Topbar"
+import MegaMenu from "./MegaMenu"
 import useShowOnScrollUp from "../hooks/useShowOnScrollUp"
 import { ArrowRight, ChevronDown, CloseIcon, MenuIcon, PhoneIcon } from "./Icons"
 import { cta, mainNav } from "../data/navigation"
@@ -13,6 +14,19 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const dropdownButtonRef = useRef(null)
+  const closeTimer = useRef(null)
+
+  // Hover intent: open right away, close after a short grace period so the pointer
+  // can travel from the button into the mega menu without it snapping shut.
+  const openDropdown = () => {
+    clearTimeout(closeTimer.current)
+    setDropdownOpen(true)
+  }
+  const closeDropdownSoon = () => {
+    clearTimeout(closeTimer.current)
+    closeTimer.current = setTimeout(() => setDropdownOpen(false), 180)
+  }
   const topbarVisible = useShowOnScrollUp()
   const [scrolled, setScrolled] = useState(false)
 
@@ -27,6 +41,8 @@ export default function Navbar() {
   useEffect(() => {
     const onKeyDown = e => {
       if (e.key === "Escape") {
+        // Return focus to the Services button if it was inside the mega menu
+        if (dropdownRef.current && dropdownRef.current.contains(document.activeElement)) dropdownButtonRef.current?.focus()
         setDropdownOpen(false)
         setMobileOpen(false)
       }
@@ -69,52 +85,29 @@ export default function Navbar() {
           </div>
 
           {/* Desktop */}
-          <nav aria-label="Main" className="hidden flex-1 lg:block">
-            <ul className="flex items-center justify-center gap-5 xl:gap-7">
+          <nav aria-label="Main" className="hidden flex-1 self-stretch lg:block">
+            <ul className="flex h-full items-center justify-center gap-5 xl:gap-7">
               {mainNav.map(item =>
                 item.children ? (
                   <li
                     key={item.label}
                     ref={dropdownRef}
-                    className="relative"
-                    onPointerEnter={e => e.pointerType === "mouse" && setDropdownOpen(true)}
-                    onPointerLeave={e => e.pointerType === "mouse" && setDropdownOpen(false)}
+                    className="flex h-full items-center"
+                    onPointerEnter={e => e.pointerType === "mouse" && openDropdown()}
+                    onPointerLeave={e => e.pointerType === "mouse" && closeDropdownSoon()}
                   >
                     <button
+                      ref={dropdownButtonRef}
                       type="button"
-                      className={`${desktopLink(isActive(item))} flex items-center gap-1`}
+                      className={`${desktopLink(isActive(item) || dropdownOpen)} flex items-center gap-1`}
                       aria-expanded={dropdownOpen}
                       aria-controls="services-menu"
                       onClick={() => setDropdownOpen(open => !open)}
                     >
                       {item.label}
-                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""}`} />
                     </button>
-                    <div
-                      id="services-menu"
-                      className={`absolute left-1/2 top-full -translate-x-1/2 pt-3 transition ${dropdownOpen ? "visible opacity-100" : "invisible opacity-0"}`}
-                    >
-                      <ul className="w-72 rounded-md border border-sand bg-white p-2 shadow-lg">
-                        {item.children.map(child => (
-                          <li key={child.path}>
-                            <a
-                              href={url(child.path)}
-                              aria-current={isCurrent(child.path) ? "page" : undefined}
-                              className={`block rounded px-3 py-2 text-sm transition-colors hover:bg-cream hover:text-rust ${
-                                isCurrent(child.path) ? "bg-cream text-rust" : "text-ink/85"
-                              }`}
-                            >
-                              {child.label}
-                            </a>
-                          </li>
-                        ))}
-                        <li className="mt-1 border-t border-sand pt-1">
-                          <a href={url(item.path)} className="flex items-center justify-between rounded px-3 py-2 text-sm font-semibold text-rust transition-colors hover:bg-cream">
-                            View All Services <ArrowRight className="h-4 w-4" />
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
+                    <MegaMenu id="services-menu" open={dropdownOpen} items={item.children} allPath={item.path} />
                   </li>
                 ) : (
                   <li key={item.path}>

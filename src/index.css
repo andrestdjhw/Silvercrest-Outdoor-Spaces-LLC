@@ -2,32 +2,34 @@
 @plugin "@tailwindcss/typography";
 
 /*
-  Brand tokens — Silvercrest identity by Ana (palette sampled from the brand board).
-  Every template and component reads from these tokens.
+  Brand tokens — "Propuesta Silvercrest Outdoor Spaces" (828 Marketing Solutions, Nov 2026).
+  Palette names from the proposal; Tailwind names kept so templates don't change.
+  Target share of color: Frenchman Rust 40% · Silver State 24% · Caliche 12% ·
+  Copper Mesa 9% · Sandstone Glow 8% · Creosote 7%.
 
-  Typeface: Archivo (variable width axis) approximates the brand lettering until the
-  official font files are delivered:
-    font-display → condensed (wordmark-style headings)
-    font-wide    → extended (the "OUTDOOR SPACES" descriptor style; small uppercase labels)
-    font-sans    → regular width (body copy)
+  Typeface: Roboto (the proposal's institutional font) via Roboto Flex, whose width axis
+  gives the condensed headings and the extended labels from the same family:
+    font-display → condensed (headings, echoes the SILVERCREST wordmark)
+    font-wide    → extended (OUTDOOR SPACES-style labels, annotations)
+    font-sans    → regular Roboto (body copy)
 */
 @theme {
-  --color-rust: #6a3219;        /* primary: buttons, links, footer, CTA band */
-  --color-rust-dark: #4f2412;   /* hover, topbar, footer */
-  --color-copper: #bd8353;      /* accents: rules, borders, icons (not for small text) */
-  --color-copper-dark: #94592f; /* copper for small text on light backgrounds (AA contrast) */
-  --color-peach: #d6a079;       /* light accent on dark backgrounds */
-  --color-slate: #808e97;       /* secondary surfaces */
-  --color-olive: #6c6a53;       /* secondary accent */
-  --color-cream: #f3eee8;       /* page background */
-  --color-sand: #e6dacc;        /* soft section backgrounds, borders */
-  --color-ink: #231a15;         /* text, dark overlays */
+  --color-rust: #65290f;        /* Frenchman Rust — primary: buttons, bands, footer */
+  --color-rust-dark: #4a1d09;   /* Frenchman Rust, deeper — hover, topbar */
+  --color-copper: #bc753f;      /* Copper Mesa — accents, strata, icons (not for small text) */
+  --color-copper-dark: #8c5226; /* Copper Mesa for small text on light backgrounds (AA contrast) */
+  --color-peach: #da9367;       /* Sandstone Glow — light accent on dark backgrounds */
+  --color-slate: #73848e;       /* Silver State — secondary surfaces */
+  --color-olive: #615f46;       /* Creosote — secondary accent */
+  --color-cream: #f2ece4;       /* Caliche — page background */
+  --color-sand: #e6dacb;        /* Caliche, deeper — soft section backgrounds, borders */
+  --color-ink: #211a16;         /* text, dark overlays */
 
-  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-display--font-variation-settings: "wdth" 72;
-  --font-wide: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-wide--font-variation-settings: "wdth" 125;
+  --font-sans: "Roboto Flex", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Roboto Flex", "Roboto Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-display--font-variation-settings: "wdth" 40;
+  --font-wide: "Roboto Flex", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-wide--font-variation-settings: "wdth" 151;
 }
 
 /*
@@ -252,31 +254,6 @@
     pointer-events: none;
   }
 
-  /* Cursor follower ring (mouse/trackpad only; the native cursor stays visible) */
-  .cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 80;
-    width: 2.25rem;
-    height: 2.25rem;
-    margin: -1.125rem 0 0 -1.125rem;
-    border: 1.5px solid var(--color-copper);
-    border-radius: 9999px;
-    pointer-events: none;
-    transition:
-      width 0.3s ease,
-      height 0.3s ease,
-      margin 0.3s ease,
-      background-color 0.3s ease;
-  }
-  .cursor-ring.is-hover {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin: -1.75rem 0 0 -1.75rem;
-    background-color: rgb(189 131 83 / 0.12);
-  }
-
   /* Arrow nudge on buttons and "Learn more" links */
   .btn svg,
   .group svg:last-child {
@@ -375,5 +352,170 @@ html.lenis body {
     opacity: 0;
     /* four-point star */
     clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  }
+}
+
+/*
+  Brand graphic resources (proposal, "Recursos gráficos"):
+  01 .strata        horizontal lines of the isotype — dividers and backgrounds, always horizontal, same weight
+  02 [data-stretch] stretched photo — one column of pixels pulled to the edge (src/scripts/stretch.js)
+  03 .annotation    time · place · orientation, like a site log
+  04 .cross-grid    plan-drawing crosses as a subtle texture on colored backgrounds
+*/
+@layer components {
+  .strata {
+    --strata-color: var(--color-copper);
+    --strata-line: 3px;
+    --strata-gap: 5px;
+    height: calc(var(--strata-line) * 5 + var(--strata-gap) * 4);
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--strata-color) 0 var(--strata-line),
+      transparent var(--strata-line) calc(var(--strata-line) + var(--strata-gap))
+    );
+  }
+
+  .annotation {
+    font-family: var(--font-wide);
+    font-variation-settings: "wdth" 151;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .cross-grid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M36 30v12M30 36h12' stroke='%23f2ece4' stroke-opacity='.22' stroke-width='1.2'/%3E%3C/svg%3E");
+    background-size: 72px 72px;
+  }
+
+  [data-stretch] {
+    position: relative;
+  }
+  .stretch-strip {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
+/*
+  Brand gradients — taken from the proposal's own pieces: the dusk sky behind the logo
+  (Silver State fading into warm light) and the low copper light of sunrise/sunset.
+  Stops chosen so cream body text stays ≥ 4.5:1 wherever copy sits on them.
+*/
+@utility bg-dusk {
+  /* Silver State → warm dusk (mantra band) */
+  background-image: linear-gradient(160deg, #4f5d66 0%, #5d6d77 45%, #6e5a50 100%);
+}
+@utility bg-ember {
+  /* Frenchman Rust with a low sun glowing behind the mountain (closing CTA) */
+  background-image:
+    radial-gradient(ellipse 70% 55% at 50% 115%, rgb(218 147 103 / 0.55), transparent 70%),
+    linear-gradient(180deg, #4a1d09 0%, #65290f 55%, #7a3415 100%);
+}
+@utility bg-night {
+  /* Footer: ink deepening into rust, faint copper light top-right */
+  background-image:
+    radial-gradient(ellipse 50% 60% at 100% 0%, rgb(188 117 63 / 0.18), transparent 70%),
+    linear-gradient(180deg, #211a16 0%, #2c1a12 100%);
+}
+@utility bg-dune {
+  /* Light sections: Caliche into sand */
+  background-image: linear-gradient(180deg, var(--color-cream) 0%, #ebe1d4 100%);
+}
+@utility bg-dune-r {
+  background-image: linear-gradient(0deg, var(--color-cream) 0%, #ebe1d4 100%);
+}
+/* Headings are split into words by motion.js, so each word carries the gradient too */
+.text-sunset .split-w__i {
+  background-image: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility text-sunset {
+  /* Gradient lettering for one accent word on dark photos */
+  background-image: linear-gradient(90deg, var(--color-cream) 0%, var(--color-peach) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@layer components {
+  .btn-primary {
+    background-image: linear-gradient(135deg, #7a3415 0%, #65290f 55%, #561f0a 100%);
+  }
+  /* Strata lines lit like the low sun: copper → sandstone */
+  .strata-sunset {
+    background: linear-gradient(90deg, var(--color-copper), var(--color-peach));
+    mask: repeating-linear-gradient(to bottom, #000 0 var(--strata-line), transparent var(--strata-line) calc(var(--strata-line) + var(--strata-gap)));
+  }
+}
+
+/*
+  Hero form as translucent glass over the photo (desktop only — on mobile the card sits
+  on a light background, where glass would wash out). Unlayered on purpose so it wins
+  over the utility classes; targets the cf-* hooks in ContactForm.js.
+*/
+@media (width >= 64rem) {
+  .hero-glass {
+    background: linear-gradient(160deg, rgb(33 26 22 / 0.5), rgb(74 29 9 / 0.38));
+    border-color: rgb(242 236 228 / 0.22);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(242 236 228 / 0.12);
+  }
+  .hero-glass .cf-title {
+    color: var(--color-cream);
+  }
+  .hero-glass .cf-muted,
+  .hero-glass .cf-label {
+    color: rgb(242 236 228 / 0.85);
+  }
+  .hero-glass .cf-optional {
+    color: rgb(242 236 228 / 0.6);
+  }
+  .hero-glass .cf-required,
+  .hero-glass .cf-link {
+    color: var(--color-peach);
+  }
+  .hero-glass .cf-error {
+    color: #fecaca;
+  }
+  .hero-glass .cf-input {
+    background-color: rgb(242 236 228 / 0.1);
+    border-color: rgb(242 236 228 / 0.28);
+    color: var(--color-cream);
+  }
+  .hero-glass .cf-input::placeholder {
+    color: rgb(242 236 228 / 0.5);
+  }
+  .hero-glass .cf-input:focus {
+    background-color: rgb(242 236 228 / 0.16);
+    border-color: var(--color-peach);
+    --tw-ring-color: rgb(218 147 103 / 0.4);
+  }
+  .hero-glass .cf-input[aria-invalid="true"] {
+    border-color: #fca5a5;
+  }
+  /* Native dropdown list stays light, so its options need dark text */
+  .hero-glass select.cf-input option {
+    color: var(--color-ink);
+  }
+  .hero-glass input[type="checkbox"] {
+    accent-color: var(--color-copper);
+  }
+  /* The light button reads better on the dark glass */
+  .hero-glass .btn-primary {
+    --btn-fill: var(--color-peach);
+    background-image: none;
+    background-color: var(--color-cream);
+    color: var(--color-rust);
+  }
+  .hero-glass .btn-primary:hover,
+  .hero-glass .btn-primary:focus-visible {
+    color: var(--color-ink);
   }
 }

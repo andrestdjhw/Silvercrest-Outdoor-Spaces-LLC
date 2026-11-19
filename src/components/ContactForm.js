@@ -5,7 +5,8 @@ import { site } from "../data/site"
 /**
  * Consultation request form (brief, section 09).
  * variant="full"    → /contact/ (all fields, incl. optional project area + timing)
- * variant="compact" → home hero (required fields + short notes)
+ * variant="compact" → home hero (required fields + message)
+ * cf-* classes are styling hooks (e.g. the translucent hero card, .hero-glass in index.css).
  * Backend: inc/contact-form.php
  */
 
@@ -100,26 +101,26 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
   if (status === "success") {
     return (
       <div role="status" className="py-6 text-center">
-        <p className="font-display text-3xl font-semibold text-ink">Thank you.</p>
-        <p className="mt-3 leading-relaxed text-ink/80">Your request has been received. Our team will be in touch.</p>
+        <p className="cf-title font-display text-3xl font-semibold text-ink">Thank you.</p>
+        <p className="cf-muted mt-3 leading-relaxed text-ink/80">Your request has been received. Our team will be in touch.</p>
       </div>
     )
   }
 
   const inputClass = name =>
-    `${compact ? "mt-1 py-2" : "mt-1.5 py-2.5"} block w-full rounded-md border bg-white px-3.5 text-sm text-ink placeholder:text-ink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-rust/30 ${
+    `cf-input ${compact ? "mt-1 py-2" : "mt-1.5 py-2.5"} block w-full rounded-md border bg-white px-3.5 text-sm text-ink placeholder:text-ink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-rust/30 ${
       errors[name] ? "border-red-600 focus:border-red-600" : "border-sand focus:border-rust"
     }`
 
   const Field = ({ name, label, optional, children }) => (
     <div>
-      <label htmlFor={id(name)} className="block text-xs font-semibold font-wide uppercase tracking-wide text-ink/80">
+      <label htmlFor={id(name)} className="cf-label block text-xs font-semibold font-wide uppercase tracking-wide text-ink/80">
         {label}
-        {optional ? <span className="ml-1 font-normal normal-case tracking-normal text-ink/50">(optional)</span> : <span className="text-rust"> *</span>}
+        {optional ? <span className="cf-optional ml-1 font-normal normal-case tracking-normal text-ink/50">(optional)</span> : <span className="cf-required text-rust"> *</span>}
       </label>
       {children}
       {errors[name] && (
-        <p id={id(`${name}-error`)} className="mt-1 text-xs text-red-700">
+        <p id={id(`${name}-error`)} className="cf-error mt-1 text-xs text-red-700">
           {errors[name]}
         </p>
       )}
@@ -201,15 +202,15 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
         </div>
       )}
 
-      {!compact && Field({
+      {Field({
         name: "notes",
-        label: "Project notes",
+        label: compact ? "Message" : "Project notes",
         optional: true,
         children: (
           <textarea
-            rows={5}
+            rows={compact ? 3 : 5}
             placeholder="Tell us about your space and what you have in mind."
-            className={inputClass("notes")}
+            className={`${inputClass("notes")} resize-y`}
             value={values.notes}
             onChange={update}
             {...a11y("notes")}
@@ -218,7 +219,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
       })}
 
       <div>
-        <label htmlFor={id("consent")} className="flex items-start gap-3 text-xs leading-relaxed text-ink/75">
+        <label htmlFor={id("consent")} className="cf-muted flex items-start gap-3 text-xs leading-relaxed text-ink/75">
           <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 rounded border-sand accent-rust" checked={values.consent} onChange={update} {...a11y("consent")} />
           <span>
             I agree to be contacted by {site.name} about my request by phone or email.
@@ -226,7 +227,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
               <>
                 {" "}
                 See our{" "}
-                <a href={config.privacyUrl} className="text-rust underline">
+                <a href={config.privacyUrl} className="cf-link text-rust underline">
                   Privacy Policy
                 </a>
                 .
@@ -235,7 +236,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
           </span>
         </label>
         {errors.consent && (
-          <p id={id("consent-error")} className="mt-1 text-xs text-red-700">
+          <p id={id("consent-error")} className="cf-error mt-1 text-xs text-red-700">
             {errors.consent}
           </p>
         )}
@@ -262,9 +263,9 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
       </button>
 
       {compact && (
-        <p className="text-center text-xs text-ink/70">
+        <p className="cf-muted text-center text-xs text-ink/70">
           Prefer to talk?{" "}
-          <a href={site.phoneHref} className="inline-flex items-center gap-1 font-semibold text-rust hover:underline">
+          <a href={site.phoneHref} className="cf-link inline-flex items-center gap-1 font-semibold text-rust hover:underline">
             <PhoneIcon className="h-3.5 w-3.5" /> {site.phone}
           </a>
         </p>

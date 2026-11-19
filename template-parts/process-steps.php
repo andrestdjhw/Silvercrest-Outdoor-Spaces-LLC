@@ -1,6 +1,6 @@
 <?php
 /**
- * "From Concept to Completed Landscape" — 4 steps.
+ * "Here’s what happens next, and when" — 4 steps (brand voice: show the real process).
  *
  * $args:
  *   title     (string) section heading
@@ -8,9 +8,9 @@
  *   class     (string) section classes (background, spacing)
  */
 $args = wp_parse_args($args, array(
-  'title' => 'From Concept to Completed Landscape',
+  'title' => 'Here’s What Happens Next, and When',
   'link'  => false,
-  'class' => 'bg-sand/40 py-16 lg:py-20',
+  'class' => 'bg-dune py-16 lg:py-20',
 ));
 
 $steps = silvercrest_process_steps();

@@ -35,14 +35,14 @@ get_header(); ?>
           </a>
         </div>
       </div>
-      <?php silvercrest_image("locations/{$slug}-overview", 'Landscape project in ' . $location['city'], 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
+      <?php silvercrest_image("locations/{$slug}-overview", 'Landscape project in ' . $location['city'], 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
     </div>
   </section>
 
   <?php get_template_part('template-parts/service-cards', null, array(
     'slugs' => $location['services'],
     'title' => 'Services in ' . $location['city'],
-    'class' => 'bg-sand/40 py-16 lg:py-20',
+    'class' => 'bg-dune py-16 lg:py-20',
   )); ?>
 
   <?php if ($projects) : ?>

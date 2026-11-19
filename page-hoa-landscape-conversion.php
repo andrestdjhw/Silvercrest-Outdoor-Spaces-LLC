@@ -40,11 +40,11 @@ get_header(); ?>
           Request a Project Consultation <?php silvercrest_icon('arrow-right', 'h-4 w-4'); ?>
         </a>
       </div>
-      <?php silvercrest_image('hoa/hoa-overview', 'Converted common area with desert planting', 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
+      <?php silvercrest_image('hoa/hoa-overview', 'Converted common area with desert planting', 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
     </div>
   </section>
 
-  <section class="bg-sand/40 py-16 lg:py-20">
+  <section class="bg-dune py-16 lg:py-20">
     <div class="container-site">
       <?php silvercrest_section_heading('How We Help'); ?>
       <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

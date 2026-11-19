@@ -45,7 +45,6 @@ export default function initMotion() {
     initHeroPointer()
     initMagnetic()
     initTilt()
-    initCursor()
   }
 
   // Images and web fonts change layout after first paint.
@@ -329,32 +328,5 @@ function initTilt() {
       gsap.to(el, { rotateY: 8 * x, rotateX: -8 * y, y: -6, transformPerspective: 900, duration: 0.6, ease: "power3.out" })
     })
     el.addEventListener("mouseleave", () => gsap.to(el, { rotateY: 0, rotateX: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.5)" }))
-  })
-}
-
-function initCursor() {
-  const ring = document.createElement("div")
-  ring.className = "cursor-ring"
-  ring.setAttribute("aria-hidden", "true")
-  document.body.appendChild(ring)
-
-  let x = -100
-  let y = -100
-  let cx = -100
-  let cy = -100
-  window.addEventListener("mousemove", e => {
-    x = e.clientX
-    y = e.clientY
-  }, { passive: true })
-  document.addEventListener("mouseleave", () => {
-    x = y = -100
-  })
-  gsap.ticker.add(() => {
-    cx += (x - cx) * 0.18
-    cy += (y - cy) * 0.18
-    ring.style.transform = `translate(${cx}px, ${cy}px)`
-  })
-  document.addEventListener("mouseover", e => {
-    ring.classList.toggle("is-hover", !!e.target.closest("a, button, input, select, textarea, label, summary, [role='button']"))
   })
 }

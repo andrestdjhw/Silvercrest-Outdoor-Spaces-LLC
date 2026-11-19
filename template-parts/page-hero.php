@@ -36,7 +36,7 @@ foreach ($crumbs as $i => $crumb) {
   <?php if ($args['image']) : ?>
     <?php silvercrest_image($args['image'], $args['alt'], 'hero-zoom absolute inset-0 -z-10 h-full w-full object-cover', true); ?>
   <?php endif; ?>
-  <div class="absolute inset-0 -z-10 bg-linear-to-t from-ink/90 via-ink/65 to-ink/35 sm:bg-linear-to-r sm:from-ink/90 sm:via-ink/55 sm:to-ink/10" aria-hidden="true"></div>
+  <div class="absolute inset-0 -z-10 bg-linear-to-t from-ink/90 via-rust-dark/60 to-ink/35 sm:bg-linear-to-r sm:from-ink/90 sm:via-rust-dark/50 sm:to-ink/5" aria-hidden="true"></div>
 
   <div class="container-site flex min-h-[22rem] items-end pb-14 pt-20 lg:min-h-[28rem] lg:pb-16">
     <div class="max-w-3xl">

@@ -28,7 +28,7 @@ get_header(); ?>
   <?php get_template_part('template-parts/service-cards', null, array(
     'slugs' => $care,
     'title' => 'Systems & Care',
-    'class' => 'bg-sand/40 py-16 lg:py-20',
+    'class' => 'bg-dune py-16 lg:py-20',
     'cols'  => 'sm:grid-cols-2 lg:grid-cols-4',
   )); ?>
 

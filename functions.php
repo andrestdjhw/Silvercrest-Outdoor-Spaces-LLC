@@ -34,8 +34,8 @@ require get_theme_file_path('/inc/contact-form.php');
 function silvercrest_load_assets() {
   $asset = include get_theme_file_path('/build/index.asset.php');
 
-  // Archivo with its width axis (condensed headings / extended labels). Swap if Ana delivers the official brand font.
-  wp_enqueue_style('silvercrest-fonts', 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap', array(), null);
+  // Roboto (brand proposal) as Roboto Flex: its width axis drives the condensed headings and extended labels.
+  wp_enqueue_style('silvercrest-fonts', 'https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,300..800&display=swap', array(), null);
   wp_enqueue_style('silvercrest-main', get_theme_file_uri('/build/index.css'), array('silvercrest-fonts'), filemtime(get_theme_file_path('/build/index.css')));
 
   wp_enqueue_script('silvercrest-main', get_theme_file_uri('/build/index.js'), $asset['dependencies'], $asset['version'], true);
@@ -46,6 +46,10 @@ function silvercrest_load_assets() {
     'email'     => SILVERCREST_EMAIL,
     'location'  => SILVERCREST_LOCATION,
     'socials'   => array_filter(silvercrest_socials()),
+    'services'  => silvercrest_menu_services(),
+    'megaMenu'  => array(
+      'image' => silvercrest_image_url('services/services-hero'),
+    ),
     'form'      => array(
       'endpoint'   => rest_url('silvercrest/v1/consultation'),
       'privacyUrl' => get_privacy_policy_url(),
@@ -73,3 +77,21 @@ function silvercrest_add_support() {
 }
 
 add_action('after_setup_theme', 'silvercrest_add_support');
+
+/**
+ * Services for the navbar mega menu (React), from the same registry as the service pages.
+ * Icon markup is the theme's own static SVG paths.
+ */
+function silvercrest_menu_services() {
+  $items = array();
+  foreach (silvercrest_services() as $slug => $service) {
+    $items[] = array(
+      'label' => $service['label'],
+      'path'  => "/{$slug}/",
+      'desc'  => $service['menu'],
+      'group' => $service['group'],
+      'icon'  => silvercrest_icon_paths($service['icon']),
+    );
+  }
+  return $items;
+}

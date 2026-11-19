@@ -6,6 +6,7 @@ import Footer from "./components/Footer"
 import ContactForm from "./components/ContactForm"
 import initReveal from "./scripts/reveal"
 import initMotion from "./scripts/motion"
+import initStretch from "./scripts/stretch"
 
 // Render synchronously so React-built markup (footer giant text, etc.) exists
 // before the motion system scans the page.
@@ -25,5 +26,6 @@ document.querySelectorAll('[data-react="contact-form"]').forEach((el, i) => {
   render(el, <ContactForm variant={el.dataset.variant || "full"} idPrefix={`cf${i}`} />)
 })
 
+initStretch() // before motion: it opts its images out of the scroll zoom
 initMotion()
 initReveal()

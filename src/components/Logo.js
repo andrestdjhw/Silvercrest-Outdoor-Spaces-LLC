@@ -32,13 +32,13 @@ export default function Logo({ variant = "dark", className = "" }) {
   const light = variant === "light"
 
   return (
-    <span className={`inline-flex flex-col items-center leading-none ${light ? "text-cream" : "text-ink"} ${className}`}>
-      <LogoMark className="h-3.5 w-12" />
-      <span className="relative mt-1 font-display text-[1.7rem] font-semibold leading-[0.9] tracking-tight [font-variation-settings:'wdth'_62]">
+    <span className={`inline-flex flex-col items-center leading-none ${light ? "text-cream" : "text-rust"} ${className}`}>
+      <LogoMark className={`h-3.5 w-12 ${light ? "text-peach" : "text-copper"}`} />
+      <span className="relative mt-1 font-display text-[1.8rem] font-bold leading-[0.9] tracking-tight [font-variation-settings:'wdth'_25]">
         SILVERCREST
         <span className="absolute -right-3 bottom-0 font-sans text-[6px] font-semibold tracking-normal">TM</span>
       </span>
-      <span className="mt-1 font-wide text-[8.5px] font-medium tracking-[0.22em]">OUTDOOR SPACES</span>
+      <span className={`mt-1 font-wide text-[8px] font-medium tracking-[0.24em] ${light ? "text-peach" : ""}`}>OUTDOOR SPACES</span>
     </span>
   )
 }
