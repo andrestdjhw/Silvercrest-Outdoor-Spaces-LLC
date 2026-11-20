@@ -135,7 +135,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
   })
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} noValidate className={compact ? "space-y-3" : "space-y-4"}>
+    <form ref={formRef} onSubmit={onSubmit} noValidate className={`cf-form ${compact ? "space-y-3" : "space-y-4"}`}>
       {/* Honeypot — hidden from people and assistive tech */}
       <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
         <label htmlFor={id("company_website")}>Company website</label>
@@ -263,7 +263,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
       </button>
 
       {compact && (
-        <p className="cf-muted text-center text-xs text-ink/70">
+        <p className="cf-alt cf-muted text-center text-xs text-ink/70">
           Prefer to talk?{" "}
           <a href={site.phoneHref} className="cf-link inline-flex items-center gap-1 font-semibold text-rust hover:underline">
             <PhoneIcon className="h-3.5 w-3.5" /> {site.phone}

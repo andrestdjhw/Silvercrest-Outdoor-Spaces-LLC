@@ -22,7 +22,7 @@ get_header(); ?>
     'title'       => $current_term ? $current_term->name . ' Projects' : 'See the Difference in the Details',
     'intro'       => 'Discover outdoor spaces shaped around how people live, move, and gather.',
     'image'       => 'projects/projects-hero',
-    'alt'         => 'Completed Silvercrest outdoor space',
+    'alt'         => 'Completed Silvercrest outdoor space',  // slot photo + alt: inc/media-map.php
     'breadcrumbs' => $breadcrumbs,
   )); ?>
 
@@ -63,14 +63,19 @@ get_header(); ?>
           ?>
         </div>
       <?php else : ?>
-        <!-- Empty state until real projects are published -->
-        <div class="mx-auto max-w-2xl text-center">
-          <?php silvercrest_section_heading('Our Portfolio Is Growing'); ?>
-          <p class="mt-6 leading-relaxed text-ink/80">
-            We’re documenting recent projects to share here soon. In the meantime, we’re happy to talk through ideas for your space and show you examples during your consultation.
-          </p>
-          <div class="mt-8"><?php silvercrest_cta_button(); ?></div>
-        </div>
+        <!-- No project posts yet: real photos from our crews (template-parts/work-gallery.php);
+             the plain empty state only if those are missing too. -->
+        <?php if (!$current_term && silvercrest_work_gallery()) : ?>
+          <?php get_template_part('template-parts/work-gallery'); ?>
+        <?php else : ?>
+          <div class="mx-auto max-w-2xl text-center">
+            <?php silvercrest_section_heading('Our Portfolio Is Growing'); ?>
+            <p class="mt-6 leading-relaxed text-ink/80">
+              We’re documenting recent projects to share here soon. In the meantime, we’re happy to talk through ideas for your space and show you examples during your consultation.
+            </p>
+            <div class="mt-8"><?php silvercrest_cta_button(); ?></div>
+          </div>
+        <?php endif; ?>
       <?php endif; ?>
 
     </div>

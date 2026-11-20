@@ -35,8 +35,41 @@ function silvercrest_image_path($slug) {
  * Public URL of the photo for a slot, or '' (used to pass images to React).
  */
 function silvercrest_image_url($slug) {
+  if ($media = silvercrest_media_for($slug)) {
+    return (string) wp_get_attachment_image_url($media[0], 'large');
+  }
   $path = silvercrest_image_path($slug);
   return $path ? get_theme_file_uri($path) : '';
+}
+
+/**
+ * Muted, looping background video. No poster: the slot photo is a different scene and would
+ * flash before the first frame; the photo is only the fallback when the attachment is missing.
+ * Reduced motion: src/scripts/hero-video.js pauses it on the first frame.
+ * $lazy = true: no autoplay and preload="none", so nothing downloads until hero-video.js plays it
+ * on screen (for videos below the fold or hidden on mobile).
+ */
+function silvercrest_video($attachment_id, $poster_slug, $alt, $class = '', $mobile_id = 0, $lazy = false) {
+  $is_video = function ($id) {
+    return $id && strpos((string) get_post_mime_type($id), 'video/') === 0 && wp_get_attachment_url($id);
+  };
+  if (!$is_video($attachment_id)) {
+    silvercrest_image($poster_slug, $alt, $class, true);
+    return;
+  }
+  // The browser takes the first <source> whose media matches, so the phone cut goes first.
+  $sources = '';
+  if ($is_video($mobile_id)) {
+    $sources .= sprintf('<source src="%s" type="video/mp4" media="(max-width: 639px)">', esc_url(wp_get_attachment_url($mobile_id)));
+  }
+  $sources .= sprintf('<source src="%s" type="video/mp4">', esc_url(wp_get_attachment_url($attachment_id)));
+  printf(
+    '<video class="%1$s"%3$s muted loop playsinline preload="%4$s" disablepictureinpicture aria-hidden="true" data-bg-video>%2$s</video>',
+    esc_attr($class),
+    $sources,
+    $lazy ? '' : ' autoplay',
+    $lazy ? 'none' : 'auto'
+  );
 }
 
 /**
@@ -44,9 +77,10 @@ function silvercrest_image_url($slug) {
  * (src/scripts/stretch.js). Never use it on photos of people or with the logo in frame.
  */
 function silvercrest_image($slug, $alt, $class = '', $priority = false, $reveal = false, $stretch = '') {
-  $found    = silvercrest_image_path($slug);
+  $media    = silvercrest_media_for($slug); // real photo in the Media Library (inc/media-map.php)
+  $found    = $media ? null : silvercrest_image_path($slug);
   $is_stock = $found && strpos($found, '/_stock/') !== false;
-  $stretch  = $found && in_array($stretch, array('left', 'right'), true) ? $stretch : '';
+  $stretch  = ($found || $media) && in_array($stretch, array('left', 'right'), true) ? $stretch : '';
   $wrap     = $reveal || $stretch;
 
   if ($wrap) {
@@ -59,7 +93,17 @@ function silvercrest_image($slug, $alt, $class = '', $priority = false, $reveal 
     $class = 'h-full w-full object-cover';
   }
 
-  if ($found) {
+  if ($media) {
+    // Full-bleed heroes are the priority images; everything else sits in a half or third column.
+    echo wp_get_attachment_image($media[0], $priority ? 'full' : 'large', false, array(
+      'alt'           => $media[1],
+      'class'         => $class,
+      'sizes'         => $priority ? '100vw' : '(min-width: 1024px) 50vw, 100vw',
+      'loading'       => $priority ? false : 'lazy',
+      'fetchpriority' => $priority ? 'high' : false,
+      'decoding'      => 'async',
+    ) + ($reveal ? array('data-scroll-zoom' => '') : array()));
+  } elseif ($found) {
     printf(
       '<img src="%1$s" alt="%2$s" class="%3$s" %4$s decoding="async"%5$s%6$s>',
       esc_url(get_theme_file_uri($found)),
@@ -223,4 +267,18 @@ function silvercrest_seal($class = 'h-40 w-40', $tone = 'brand') {
  */
 function silvercrest_annotation($parts, $class = 'text-copper-dark') {
   printf('<p class="annotation %1$s">%2$s</p>', esc_attr($class), esc_html(implode(' · ', array_filter($parts))));
+}
+
+/**
+ * Google Maps embed (no API key), lazy-loaded, warmed to the palette.
+ * $query: a place, never an address of ours (brand rule). $class sizes the wrapper.
+ */
+function silvercrest_map_embed($query, $title, $zoom = 11, $class = 'aspect-[16/10]') {
+  $src = 'https://maps.google.com/maps?q=' . rawurlencode($query) . '&z=' . (int) $zoom . '&hl=en&output=embed';
+  printf(
+    '<div class="relative overflow-hidden bg-sand %1$s"><iframe src="%2$s" title="%3$s" class="absolute inset-0 h-full w-full border-0 [filter:saturate(.75)_sepia(.12)]" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>',
+    esc_attr($class),
+    esc_url($src),
+    esc_attr($title)
+  );
 }

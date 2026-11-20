@@ -70,37 +70,63 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- Values -->
-  <section class="py-16 lg:py-20">
+  <!-- Values + mission & vision: one dark band over a desert photo.
+       Motion: photo drifts (data-parallax), giant word slides (data-giant), cards reveal in a
+       stagger and tilt on hover (data-tilt), the seal's lettering turns slowly (.seal-spin). -->
+  <section class="relative isolate overflow-clip bg-ink py-20 text-cream lg:py-28">
+    <div class="absolute inset-x-0 -inset-y-[12%] -z-20" data-parallax="8" aria-hidden="true">
+      <?php silvercrest_image('about/values-bg', '', 'h-full w-full object-cover'); ?>
+    </div>
+    <div class="absolute inset-0 -z-10 bg-linear-to-b from-ink/90 via-ink/75 to-rust-dark/90" aria-hidden="true"></div>
+    <div class="strata-field absolute inset-x-0 bottom-0 -z-10 h-1/3" aria-hidden="true"></div>
+
+    <!-- Giant word sliding with the scroll -->
+    <p class="pointer-events-none absolute left-0 top-10 -z-10 whitespace-nowrap font-display text-[9rem] font-bold uppercase leading-none text-cream/[0.03] sm:text-[13rem]" data-giant aria-hidden="true">
+      Judgment · Responsibility · Respect · Craft ·
+    </p>
+
     <div class="container-site">
-      <?php silvercrest_section_heading('How We Work'); ?>
-      <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <?php foreach ($values as $value) : ?>
-          <li class="border-t-2 border-copper/60 pt-5" data-reveal>
-            <h3 class="font-display text-xl font-semibold text-ink"><?php echo esc_html($value['title']); ?></h3>
-            <p class="mt-2 text-sm leading-relaxed text-ink/75"><?php echo esc_html($value['text']); ?></p>
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p data-reveal class="annotation flex items-center gap-3 text-peach">
+            <span class="h-px w-8 bg-peach/70" aria-hidden="true"></span>Our values
+          </p>
+          <h2 class="mt-5 font-display text-4xl font-bold leading-[1] sm:text-6xl">What We Stand On</h2>
+        </div>
+        <p data-reveal class="max-w-md leading-relaxed text-cream/80">
+          Four things that don’t change from one job to the next, whatever the size of the yard.
+        </p>
+      </div>
+
+      <ul class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <?php foreach ($values as $i => $value) : ?>
+          <li data-reveal>
+            <article data-tilt class="group relative h-full overflow-hidden rounded-md border border-cream/15 bg-linear-160 from-cream/[0.10] to-cream/[0.03] p-7 shadow-2xl shadow-ink/40 backdrop-blur-md transition-colors duration-500 hover:border-peach/50">
+              <span class="text-sunset block font-display text-6xl font-bold leading-none" aria-hidden="true"><?php echo esc_html(sprintf('%02d', $i + 1)); ?></span>
+              <span class="mt-6 block h-0.5 w-10 bg-peach transition-[width] duration-500 group-hover:w-20" aria-hidden="true"></span>
+              <h3 class="mt-5 font-display text-2xl font-bold"><?php echo esc_html($value['title']); ?></h3>
+              <p class="mt-3 text-sm leading-relaxed text-cream/80"><?php echo esc_html($value['text']); ?></p>
+            </article>
           </li>
         <?php endforeach; ?>
       </ul>
-    </div>
-  </section>
 
-  <!-- Mission & vision + seal -->
-  <section class="bg-dune py-16 lg:py-24">
-    <div class="container-site grid items-center gap-12 lg:grid-cols-12">
-      <div class="flex justify-center lg:col-span-4" data-reveal="zoom">
-        <?php silvercrest_seal('h-56 w-56 sm:h-64 sm:w-64'); ?>
+      <!-- Mission & vision -->
+      <div class="mt-20 grid items-center gap-12 lg:mt-28 lg:grid-cols-12">
+        <div class="seal-spin flex justify-center lg:col-span-4" data-reveal="zoom">
+          <?php silvercrest_seal('h-56 w-56 drop-shadow-2xl sm:h-72 sm:w-72', 'light'); ?>
+        </div>
+        <dl class="divide-y divide-cream/15 rounded-md border border-cream/15 bg-ink/40 px-7 backdrop-blur-md sm:px-10 lg:col-span-8">
+          <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
+            <dt class="annotation pt-1.5 text-peach">Mission</dt>
+            <dd class="text-lg leading-relaxed text-cream/90 sm:col-span-3 lg:text-xl">Design, build and care for outdoor spaces made for living in the desert, with judgment, honesty and a commitment that runs from the first visit to the first summer.</dd>
+          </div>
+          <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
+            <dt class="annotation pt-1.5 text-peach">Vision</dt>
+            <dd class="text-lg leading-relaxed text-cream/90 sm:col-span-3 lg:text-xl">To be Southern Nevada’s reference for transforming outdoor spaces, known for proving that a yard designed for the desert gets lived in more and looks better.</dd>
+          </div>
+        </dl>
       </div>
-      <dl class="divide-y divide-ink/15 border-y border-ink/15 lg:col-span-8">
-        <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
-          <dt class="annotation pt-1 text-copper-dark">Mission</dt>
-          <dd class="text-lg leading-relaxed text-ink/85 sm:col-span-3">Design, build and care for outdoor spaces made for living in the desert, with judgment, honesty and a commitment that runs from the first visit to the first summer.</dd>
-        </div>
-        <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
-          <dt class="annotation pt-1 text-copper-dark">Vision</dt>
-          <dd class="text-lg leading-relaxed text-ink/85 sm:col-span-3">To be Southern Nevada’s reference for transforming outdoor spaces, known for proving that a yard designed for the desert gets lived in more and looks better.</dd>
-        </div>
-      </dl>
     </div>
   </section>
 

@@ -8,14 +8,6 @@
  * and never lead with the rebate.
  */
 
-$capabilities = array(
-  array('label' => 'Landscape Design',      'icon' => 'design',  'path' => '/landscape-design/'),
-  array('label' => 'Desert Landscaping',    'icon' => 'cactus',  'path' => '/desert-landscaping/'),
-  array('label' => 'Pavers & Hardscaping',  'icon' => 'pavers',  'path' => '/paver-installation/'),
-  array('label' => 'Artificial Turf',       'icon' => 'turf',    'path' => '/artificial-turf/'),
-  array('label' => 'Irrigation & Lighting', 'icon' => 'droplet', 'path' => '/irrigation-systems/'),
-);
-
 // Latest real projects when published; static photos (or placeholders) until then.
 $recent_projects = get_posts(array('post_type' => 'project', 'posts_per_page' => 3));
 
@@ -29,8 +21,8 @@ get_header(); ?>
 
 <main id="main">
 
-  <!-- Desktop: hero + capabilities strip fill the first screen (viewport minus topbar + navbar = 6.75rem). -->
-  <div class="lg:flex lg:min-h-[calc(100svh-6.75rem)] lg:flex-col">
+  <!-- Desktop: the hero fills the first screen (viewport minus topbar + navbar = 6.75rem). -->
+  <div class="hero-fit lg:flex lg:min-h-[calc(100svh-6.75rem)] lg:flex-col">
 
   <!--
     Hero with consultation form.
@@ -41,10 +33,10 @@ get_header(); ?>
     <div class="container-site grid lg:flex-1 lg:grid-cols-12 lg:items-center lg:gap-12 lg:py-10">
 
       <div class="relative py-20 lg:static lg:col-span-7 lg:py-0">
-        <!-- Photo layer: full-bleed behind the text on mobile, behind the whole hero on desktop -->
+        <!-- Video layer (Media Library: SILVERCREST_HERO_VIDEO_ID, phone cut SILVERCREST_HERO_VIDEO_MOBILE_ID; hero photo as fallback): full-bleed behind the text on mobile, behind the whole hero on desktop -->
         <!-- lg:-inset-6 leaves room for the mouse parallax so edges never show -->
         <div class="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 lg:-inset-6 lg:w-auto lg:translate-x-0" aria-hidden="true" data-hero-layer>
-          <?php silvercrest_image('home/hero', 'Completed Silvercrest outdoor space with paver patio and desert planting', 'hero-zoom h-full w-full object-cover', true); ?>
+          <?php silvercrest_video(SILVERCREST_HERO_VIDEO_ID, 'home/hero', 'Completed Silvercrest outdoor space with paver patio and desert planting', 'h-full w-full object-cover', SILVERCREST_HERO_VIDEO_MOBILE_ID); ?>
           <div class="absolute inset-0 bg-linear-to-t from-ink/90 via-rust-dark/55 to-ink/30 sm:bg-linear-to-r sm:from-ink/85 sm:via-rust-dark/45 sm:to-ink/10"></div>
           <!-- Low warm light rising from the ground, like the 6:30 p.m. sun -->
           <div class="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-copper/30 to-transparent mix-blend-soft-light"></div>
@@ -53,16 +45,25 @@ get_header(); ?>
         <div class="pointer-events-none absolute inset-0 -z-10 hidden bg-[radial-gradient(38rem_circle_at_var(--mx,50%)_var(--my,35%),rgb(214_160_121/0.2),transparent_60%)] lg:block" aria-hidden="true"></div>
 
         <h1 class="max-w-2xl font-display text-5xl font-bold leading-[0.98] text-cream sm:text-6xl lg:text-7xl">
-          Spend More Hours <span class="kmark text-sunset relative inline-block">Outside<svg class="kmark__line pointer-events-none absolute -bottom-2 left-0 h-3 w-full text-copper" viewBox="0 0 300 12" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M3 8.5C48 3.5 96 2.8 150 5.2s104 4.6 147-1.4" stroke="currentColor" stroke-width="3" stroke-linecap="round" pathLength="1" vector-effect="non-scaling-stroke"/></svg></span>
+          Your Yard, Back. <span class="kmark text-sunset relative inline-block">Even in July.<svg class="kmark__line pointer-events-none absolute -bottom-2 left-0 h-3 w-full text-copper" viewBox="0 0 300 12" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M3 8.5C48 3.5 96 2.8 150 5.2s104 4.6 147-1.4" stroke="currentColor" stroke-width="3" stroke-linecap="round" pathLength="1" vector-effect="non-scaling-stroke"/></svg></span>
         </h1>
         <p data-reveal class="mt-6 max-w-lg text-base leading-relaxed text-cream/90 sm:text-lg">
-          We design, build and care for outdoor spaces made for desert living, so you can use your yard in July, not just in March.
+          Shade where you sit, plants that sip water, stone that takes the heat. We design, build and care for outdoor spaces made for the desert.
         </p>
         <?php silvercrest_annotation(array('Las Vegas', 'Henderson', 'Se habla español'), 'mt-6 text-peach'); ?>
-        <!-- Mobile: jump to the form below -->
-        <a data-reveal href="#consultation" class="btn btn-primary mt-8 border border-cream/60 lg:hidden">
-          Request a Consultation <?php silvercrest_icon('arrow-right', 'h-4 w-4'); ?>
-        </a>
+        <!-- CTAs. The form sits beside the text on desktop, so there the primary leads to the services;
+             on mobile it jumps down to the form. -->
+        <div data-reveal class="mt-8 flex flex-wrap gap-3">
+          <a href="#consultation" class="btn btn-primary border border-cream/60 lg:hidden">
+            Request a Consultation <?php silvercrest_icon('arrow-right', 'h-4 w-4'); ?>
+          </a>
+          <a href="<?php echo silvercrest_url('/services/'); ?>" class="btn btn-light hidden lg:inline-flex">
+            Explore Our Services <?php silvercrest_icon('arrow-right', 'h-4 w-4'); ?>
+          </a>
+          <a href="<?php echo esc_attr(SILVERCREST_PHONE_HREF); ?>" class="btn btn-ghost-light">
+            <?php silvercrest_icon('phone', 'h-4 w-4'); ?> <span class="lg:hidden">Call Us</span><span class="hidden lg:inline"><?php echo esc_html(SILVERCREST_PHONE); ?></span>
+          </a>
+        </div>
       </div>
 
       <div id="consultation" class="relative scroll-mt-24 py-10 lg:col-span-5 lg:py-0">
@@ -83,26 +84,38 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- Capabilities strip -->
-  <nav aria-label="Our services" class="border-b border-sand bg-linear-to-r from-sand/80 via-cream to-sand/80">
-    <ul class="container-site grid grid-cols-2 py-3 sm:grid-cols-3 lg:grid-cols-5 lg:divide-x lg:divide-copper/30">
-      <?php foreach ($capabilities as $item) : ?>
-        <li data-reveal>
-          <a href="<?php echo silvercrest_url($item['path']); ?>" class="group flex items-center gap-3 px-3 py-4 lg:justify-center">
-            <?php silvercrest_icon($item['icon'], 'h-9 w-9 shrink-0 text-rust'); ?>
-            <span class="max-w-[8rem] font-display text-lg font-semibold leading-tight text-ink transition-colors group-hover:text-rust">
-              <?php echo esc_html($item['label']); ?>
-            </span>
-          </a>
-        </li>
-      <?php endforeach; ?>
-    </ul>
+  <!-- Services ribbon: endless smooth drift left → right (CSS .marquee). The list is printed twice so
+       the loop is seamless; the copy is hidden from assistive tech and keyboard. Hover pauses it;
+       reduced motion stops it and lets the row scroll by hand. -->
+  <nav aria-label="Our services" class="marquee border-b border-sand/70 bg-chalk">
+    <div class="marquee__track">
+      <?php for ($copy = 0; $copy < 2; $copy++) : ?>
+        <ul class="marquee__group"<?php echo $copy ? ' aria-hidden="true"' : ''; ?>>
+          <?php foreach (silvercrest_services() as $slug => $service) : ?>
+            <li>
+              <a href="<?php echo silvercrest_url("/{$slug}/"); ?>"<?php echo $copy ? ' tabindex="-1"' : ''; ?> class="group flex items-center gap-3 px-8 py-5">
+                <?php silvercrest_icon($service['icon'], 'h-8 w-8 shrink-0 text-rust'); ?>
+                <span class="whitespace-nowrap font-display text-lg font-semibold text-ink transition-colors group-hover:text-rust"><?php echo esc_html($service['label']); ?></span>
+              </a>
+            </li>
+            <li class="flex items-center text-copper" aria-hidden="true"><?php silvercrest_isotype('h-3 w-8'); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endfor; ?>
+    </div>
   </nav>
 
   </div>
 
+  <!-- All services -->
+  <?php get_template_part('template-parts/services-index'); ?>
+
+  <?php get_template_part('template-parts/reviews'); ?>
+
   <!-- Problem / opportunity -->
-  <section class="py-16 lg:py-24">
+  <section class="relative isolate overflow-hidden bg-dune py-16 lg:py-24">
+    <!-- Strata behind the photo side (brand pattern), fading in toward the edge -->
+    <div class="strata-field strata-field-light absolute bottom-0 right-0 -z-10 h-1/2 w-full [--strata-fade:to_bottom] lg:h-full lg:w-1/2 lg:[--strata-fade:to_right]" aria-hidden="true"></div>
     <div class="container-site grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
       <div>
         <?php silvercrest_section_title('Your Evenings, Back', 'sm:text-5xl'); ?>
@@ -116,16 +129,16 @@ get_header(); ?>
           Request a Consultation <?php silvercrest_icon('arrow-right', 'h-4 w-4'); ?>
         </a>
       </div>
-      <?php silvercrest_image('home/detail', 'Paver pathway with boulders, agave and low-voltage landscape lighting', 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
+      <?php silvercrest_image('home/detail', 'Paver pathway with boulders, agave and low-voltage landscape lighting', 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
     </div>
   </section>
 
-  <!-- Brand mantra: Silver State surface (the palette's second color) -->
-  <section class="relative isolate overflow-hidden bg-dusk py-16 text-cream lg:py-24">
-    <div class="cross-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true"></div>
+  <!-- Brand mantra: warm night surface (same as the footer) -->
+  <section class="relative isolate overflow-hidden bg-night py-16 text-cream lg:py-24">
+    <div class="cross-grid absolute inset-0 -z-10 opacity-40" aria-hidden="true"></div>
     <div class="container-site grid items-center gap-12 lg:grid-cols-12">
       <div class="lg:col-span-7">
-        <?php silvercrest_annotation(array('Our promise'), 'text-cream/80'); ?>
+        <?php silvercrest_annotation(array('Our promise'), 'text-peach'); ?>
         <h2 class="mt-4 font-display text-5xl font-bold leading-[0.95] sm:text-6xl lg:text-7xl">Shade First. People Always.</h2>
         <div class="strata mt-8 w-24 [--strata-color:var(--color-cream)] [--strata-gap:4px] [--strata-line:2px]" aria-hidden="true" data-reveal="line-r"></div>
       </div>
@@ -144,29 +157,12 @@ get_header(); ?>
 
   <?php get_template_part('template-parts/process-steps'); ?>
 
-  <!-- Services ticker: loops on its own and speeds up with scroll (motion.js) -->
-  <section class="overflow-hidden border-y border-sand bg-cream py-8 lg:py-10" aria-label="Services">
-    <div class="flex w-max" data-ticker aria-hidden="true">
-      <?php for ($set = 0; $set < 2; $set++) : ?>
-        <ul class="flex shrink-0 items-center gap-10 pr-10 lg:gap-14 lg:pr-14">
-          <?php foreach (array('Landscape Design', 'Desert Landscaping', 'Pavers & Hardscaping', 'Artificial Turf', 'Irrigation', 'Landscape Lighting', 'Tree & Palm Care') as $i => $word) : ?>
-            <li class="flex items-center gap-10 lg:gap-14">
-              <span class="whitespace-nowrap font-display text-5xl font-semibold uppercase leading-none lg:text-7xl <?php echo $i % 2 ? 'text-transparent [-webkit-text-stroke:1.5px_var(--color-rust)]' : 'text-ink'; ?>"><?php echo esc_html($word); ?></span>
-              <?php silvercrest_icon('plus', 'h-7 w-7 shrink-0 text-copper lg:h-9 lg:w-9'); ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-      <?php endfor; ?>
-    </div>
-    <!-- Screen readers get the list once -->
-    <p class="sr-only">Landscape design, desert landscaping, pavers and hardscaping, artificial turf, irrigation, landscape lighting, and tree and palm care.</p>
-  </section>
-
   <!-- Turf conversion / water-conscious design -->
   <section class="relative overflow-hidden bg-sand">
     <div class="relative h-72 sm:h-96 lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[58%]">
-      <?php silvercrest_image('home/xeriscape', 'Water-conscious desert planting with cactus and decorative rock', 'h-full w-full', false, true, 'left'); ?>
-      <div class="absolute inset-0 hidden bg-linear-to-r from-transparent via-transparent to-sand lg:block" aria-hidden="true"></div>
+      <?php silvercrest_image('home/xeriscape', 'Water-conscious desert planting with cactus and decorative rock', 'h-full w-full', false, true); ?>
+      <!-- Short fade only at the seam with the text, so the photo keeps its contrast -->
+      <div class="absolute inset-y-0 right-0 hidden w-1/4 bg-linear-to-r from-sand/0 to-sand lg:block" aria-hidden="true"></div>
     </div>
 
     <div class="container-site relative py-14 lg:grid lg:grid-cols-12 lg:py-24">
@@ -225,6 +221,8 @@ get_header(); ?>
     'class'  => 'bg-dune py-16 lg:py-20',
     'schema' => true,
   )); ?>
+
+  <?php get_template_part('template-parts/service-map'); ?>
 
   <?php get_template_part('template-parts/cta-final'); ?>
 

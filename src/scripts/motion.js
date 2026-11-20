@@ -5,7 +5,6 @@
  * Markup hooks:
  *   main h1 / main h2          words slide up from a mask (opt out: data-no-split)
  *   [data-scroll-zoom]         image eases from 1.12 → 1 while scrolling past
- *   [data-ticker]              marquee that speeds up with scroll velocity
  *   [data-giant]               oversized text that slides sideways with scroll
  *   [data-parallax="10"]       vertical drift (yPercent ±value) while scrolling
  *   [data-hero-pointer]        spotlight + photo parallax that follow the mouse
@@ -15,6 +14,7 @@
  *   [data-tilt]                3D tilt following the mouse
  *   .btn (not .w-full)         magnetic pull toward the cursor
  *   [data-magic-hat]           "pulled out of a magician's hat" entrance + sparkle burst
+ *   [data-stack-cards] > li    sticky step cards: the covered card shrinks and dims; icons draw in
  * Block reveals ([data-reveal]) stay CSS-driven in src/scripts/reveal.js.
  *
  * Nothing runs for prefers-reduced-motion; content is fully usable without it.
@@ -33,13 +33,13 @@ export default function initMotion() {
   initSmoothScroll()
   initSplitHeadings()
   initScrollZoom()
-  initTicker()
   initGiantText()
   initParallax()
   initHeroMarks()
   initAccordions()
   initProgressBar()
   initMagicHat()
+  initStackCards()
 
   if (finePointer) {
     initHeroPointer()
@@ -133,22 +133,6 @@ function initSplitHeadings() {
 function initScrollZoom() {
   gsap.utils.toArray("[data-scroll-zoom]").forEach(img => {
     gsap.fromTo(img, { scale: 1.12 }, { scale: 1, ease: "none", scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom 30%", scrub: true } })
-  })
-}
-
-function initTicker() {
-  gsap.utils.toArray("[data-ticker]").forEach(track => {
-    // The track holds two identical sets, so -50% loops seamlessly.
-    const tween = gsap.to(track, { xPercent: -50, duration: 40, ease: "none", repeat: -1 })
-    ScrollTrigger.create({
-      trigger: track,
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: self => {
-        gsap.to(tween, { timeScale: Math.min(5, 1 + Math.abs(self.getVelocity()) / 400), duration: 0.25, overwrite: true })
-        gsap.to(tween, { timeScale: 1, duration: 1.2, delay: 0.3 })
-      }
-    })
   })
 }
 
@@ -268,6 +252,44 @@ function initMagicHat() {
       .from(contents, { autoAlpha: 0, y: 18, duration: 0.6, ease: "power3.out", stagger: 0.05 }, 0.95)
 
     replayOnView(card, tl, "top 95%")
+  })
+}
+
+/* ---------- Stacking step cards ---------- */
+
+function initStackCards() {
+  document.querySelectorAll("[data-stack-cards]").forEach(list => {
+    const cards = [...list.children]
+
+    // Line icons draw themselves when their card comes in.
+    cards.forEach(card => {
+      const strokes = card.querySelectorAll(".stack-card__art svg *")
+      strokes.forEach(el => el.setAttribute("pathLength", "1"))
+      gsap.fromTo(strokes, { strokeDasharray: 1, strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut", stagger: 0.1,
+        scrollTrigger: { trigger: card, start: "top 80%", toggleActions: "play none none reverse" }
+      })
+    })
+
+    // Desktop only: the cards are sticky there, so each one gets covered by the next.
+    gsap.matchMedia().add("(min-width: 64rem)", () => {
+      cards.slice(0, -1).forEach((card, i) => {
+        const next = cards[i + 1]
+        // Explicit start values: tweening filter from "none" starts at brightness(0).
+        gsap.fromTo(card, { scale: 1, filter: "brightness(1) saturate(1)" }, {
+          scale: 0.94,
+          filter: "brightness(0.82) saturate(0.8)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: next,
+            start: "top bottom",
+            end: () => `top ${parseFloat(getComputedStyle(next).top) || 0}px`,
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        })
+      })
+    })
   })
 }
 

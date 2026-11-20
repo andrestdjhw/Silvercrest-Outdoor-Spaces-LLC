@@ -22,6 +22,7 @@
   --color-slate: #73848e;       /* Silver State — secondary surfaces */
   --color-olive: #615f46;       /* Creosote — secondary accent */
   --color-cream: #f2ece4;       /* Caliche — page background */
+  --color-chalk: #fbf8f4;       /* Caliche, lightest — bright strips that lift off the cream */
   --color-sand: #e6dacb;        /* Caliche, deeper — soft section backgrounds, borders */
   --color-ink: #211a16;         /* text, dark overlays */
 
@@ -138,6 +139,12 @@
   .btn-light {
     --btn-fill: var(--color-peach);
     @apply bg-cream text-rust hover:text-ink focus-visible:text-ink;
+  }
+
+  /* Secondary on dark backgrounds / over photos: cream outline, fills cream on hover */
+  .btn-ghost-light {
+    --btn-fill: var(--color-cream);
+    @apply border-2 border-cream/70 bg-ink/20 text-cream backdrop-blur-sm hover:text-rust focus-visible:text-rust;
   }
 
   /* paginate_links() output on the projects archive */
@@ -384,6 +391,25 @@ html.lenis body {
     text-transform: uppercase;
   }
 
+  /* Strata as a background pattern (brand system, 01 Estratos): horizontal lines, all the same
+     weight, fading in from the top so text sits on clean ground. */
+  .strata-field {
+    --strata-color: rgb(218 147 103 / 0.16);
+    --strata-line: 6px;
+    --strata-gap: 14px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--strata-color) 0 var(--strata-line),
+      transparent var(--strata-line) calc(var(--strata-line) + var(--strata-gap))
+    );
+    -webkit-mask-image: linear-gradient(var(--strata-fade, to bottom), transparent 0%, #000 65%);
+    mask-image: linear-gradient(var(--strata-fade, to bottom), transparent 0%, #000 65%);
+  }
+  /* On light backgrounds (cream, dune): Copper Mesa, kept behind images, never under body text */
+  .strata-field-light {
+    --strata-color: rgb(188 117 63 / 0.22);
+  }
+
   .cross-grid {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M36 30v12M30 36h12' stroke='%23f2ece4' stroke-opacity='.22' stroke-width='1.2'/%3E%3C/svg%3E");
     background-size: 72px 72px;
@@ -519,3 +545,120 @@ html.lenis body {
     color: var(--color-ink);
   }
 }
+
+/* Home services index: stacked preview photos crossfade (service-preview.js) */
+.service-preview__img {
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.5s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.service-preview__img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-preview__img { transition: none; transform: none; }
+}
+
+/* Process: step cards that stack on scroll (template-parts/process-steps.php, motion.js → initStackCards) */
+/* Glass, like the hero form: warm translucent tint + blur (tint per card: --card-bg) */
+.stack-card {
+  background-image: linear-gradient(160deg, var(--card-bg, rgb(33 26 22 / .5), rgb(33 26 22 / .38)));
+  border: 1px solid rgb(242 236 228 / 0.18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+/* Numbers: Caliche → Sandstone gradient (.text-sunset), like "Even in July." in the hero */
+.stack-card__num {
+  padding-bottom: 0.05em; /* keep the gradient clip from cutting descenders */
+}
+@media (width >= 64rem) {
+  .stack-card {
+    top: calc(7rem + var(--stack-i, 0) * 1.5rem);
+    transform-origin: 50% 0;
+  }
+}
+
+/* Home hero services ribbon (front-page.php): seamless drift left → right */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-ltr 60s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+.marquee__group {
+  display: flex;
+  flex-shrink: 0;
+}
+@keyframes marquee-ltr {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .marquee__track { animation: none; }
+  .marquee__group[aria-hidden="true"] { display: none; }
+}
+
+/*
+  Home hero fits the first screen (front-page.php .hero-fit): topbar + navbar + hero + services ribbon
+  = 100svh. Tall screens already fit; on shorter desktop screens the form, headline and ribbon tighten
+  step by step so the ribbon never drops below the fold.
+*/
+@media (width >= 64rem) and (height < 56rem) {
+  .hero-fit > section > .container-site { padding-block: 1.5rem; }
+  .hero-fit h1 { font-size: 3.75rem; }
+  .hero-fit .hero-glass { padding: 1.25rem 1.5rem; }
+  .hero-fit .hero-glass .cf-title { font-size: 1.625rem; }
+  .hero-fit .hero-glass > div { margin-top: 0.75rem; }
+  .hero-fit .cf-form > :not(:last-child) { margin-block-end: 0.6rem; }
+  .hero-fit .hero-glass textarea { height: 4rem; min-height: 0; }
+  .hero-fit .hero-glass .cf-alt { display: none; } /* the phone is already a button beside the headline */
+  .hero-fit .marquee a { padding-block: 0.875rem; }
+}
+@media (width >= 64rem) and (height < 48rem) {
+  .hero-fit h1 { font-size: 3.25rem; }
+  .hero-fit .hero-glass .cf-title { font-size: 1.375rem; }
+  .hero-fit .hero-glass .cf-title + p { display: none; }
+  .hero-fit .cf-form > :not(:last-child) { margin-block-end: 0.5rem; }
+  .hero-fit .hero-glass textarea { height: 2.75rem; }
+  .hero-fit .hero-glass .cf-input { padding-block: 0.375rem; }
+  .hero-fit .marquee a { padding-block: 0.625rem; }
+  .hero-fit .marquee svg { width: 1.5rem; height: 1.5rem; }
+}
+
+/* About: the seal's ring lettering turns slowly inside the hexagon (page-about.php) */
+.seal-spin svg > g:first-of-type {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: seal-spin 60s linear infinite;
+}
+@keyframes seal-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal-spin svg > g:first-of-type { animation: none; }
+}
+
+/* Google Translate (LanguageSwitcher): hide its banner, tooltip and highlight UI */
+body { top: 0 !important; }
+iframe.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-yAWNEb-L7lbkb { display: none !important; }
+.goog-text-highlight,
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q { background: none !important; box-shadow: none !important; }
+font { background: transparent !important; }

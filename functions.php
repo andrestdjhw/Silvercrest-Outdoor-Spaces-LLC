@@ -4,6 +4,11 @@ define('SILVERCREST_PHONE', '+1 (702) 812-0784');
 define('SILVERCREST_PHONE_HREF', 'tel:+17028120784');
 define('SILVERCREST_LOCATION', 'Las Vegas & Henderson, NV');
 
+// Map on the home page (template-parts/service-map.php). Shows the service area, not an address
+// (brand rule: don't publish the address). Once the Google Business Profile is renamed to
+// Silvercrest, this can be its name ("Silvercrest Outdoor Spaces, Las Vegas") to show its pin.
+define('SILVERCREST_MAP_QUERY', 'Las Vegas Valley, NV');
+
 // TODO: corporate email not purchased yet (questionnaire) — placeholder until confirmed.
 define('SILVERCREST_EMAIL', 'info@silvercrestoutdoorspaces.com');
 
@@ -20,12 +25,26 @@ function silvercrest_socials() {
   );
 }
 
+// TEMPORARY: the home reviews section shows SAMPLE reviews (marked "Sample" on screen) until real
+// ones are collected. Before launch: add real reviews in silvercrest_reviews() (inc/content.php) with
+// the client's permission and set this to false. Never publish the samples as real.
+define('SILVERCREST_DEMO_REVIEWS', true);
+
 // TEMPORARY: Unsplash stock photos fill image slots until real project photos arrive.
 // Set to false (and delete assets/images/_stock/) before launch — the brief requires real projects only.
 define('SILVERCREST_STOCK_IMAGES', true);
 
+// Home hero background video: Media Library attachment ID (0 = photo only).
+// The hero photo stays as the poster and as the fallback.
+define('SILVERCREST_HERO_VIDEO_ID', 27);
+// Lighter portrait cut for phones (< 640px): 720x900, ~1.3 MB vs 3.9 MB. 0 = use the full one everywhere.
+define('SILVERCREST_HERO_VIDEO_MOBILE_ID', 28);
+// Process section (template-parts/process-steps.php): real crew footage, web cut 540x960 ~3 MB. 0 = photo.
+define('SILVERCREST_PROCESS_VIDEO_ID', 49);
+
 require get_theme_file_path('/inc/template-helpers.php');
 require get_theme_file_path('/inc/stock-images.php');
+require get_theme_file_path('/inc/media-map.php');
 require get_theme_file_path('/inc/content.php');
 require get_theme_file_path('/inc/projects.php');
 require get_theme_file_path('/inc/routing.php');
@@ -95,3 +114,14 @@ function silvercrest_menu_services() {
   }
   return $items;
 }
+
+/**
+ * UpdraftPlus: leave this theme's node_modules (~600 MB of build tooling) out of backups.
+ * It's rebuilt with `npm install`; the compiled site lives in /build.
+ */
+add_filter('updraftplus_exclude_directory', function ($exclude, $fullpath) {
+  if ($exclude) {
+    return $exclude;
+  }
+  return wp_normalize_path($fullpath) === wp_normalize_path(get_theme_file_path('/node_modules'));
+}, 10, 2);
