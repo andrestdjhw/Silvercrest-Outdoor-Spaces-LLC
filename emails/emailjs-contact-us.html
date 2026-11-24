@@ -1,0 +1,94 @@
+<!-- EmailJS template "Contact Us" (template_yjp4bn1): notification to Silvercrest.
+     Paste into EmailJS → Email Templates → Contact Us → Content (Edit Content → Code Editor).
+     Variables are sent by src/components/ContactForm.js (templateParams). -->
+<div style="margin:0;padding:24px 12px;background-color:#f2ece4;font-family:Roboto,'Helvetica Neue',Arial,sans-serif;color:#211a16;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;background-color:#fbf8f4;border:1px solid #e6dacb;border-radius:8px;overflow:hidden;">
+
+    <!-- Header -->
+    <tr>
+      <td style="background-color:#65290f;padding:22px 28px;">
+        <div style="font-size:22px;line-height:1;font-weight:800;letter-spacing:1px;color:#f2ece4;">SILVERCREST</div>
+        <div style="margin-top:5px;font-size:10px;line-height:1;letter-spacing:3px;color:#da9367;">OUTDOOR SPACES</div>
+      </td>
+    </tr>
+    <tr><td style="height:4px;background-color:#bc753f;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+    <!-- Intro -->
+    <tr>
+      <td style="padding:28px 28px 8px;">
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8c5226;font-weight:700;">New consultation request</div>
+        <h1 style="margin:8px 0 0;font-size:24px;line-height:1.25;color:#211a16;">{{name}} · {{service}}</h1>
+        <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#5a4f48;">Received {{time}} (Las Vegas time). Reply to this email to write back to the customer.</p>
+      </td>
+    </tr>
+
+    <!-- Details -->
+    <tr>
+      <td style="padding:16px 28px 4px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;line-height:1.5;">
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;width:38%;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Name</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;font-weight:600;">{{name}}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Phone</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;font-weight:600;"><a href="tel:{{phone}}" style="color:#65290f;text-decoration:none;">{{phone}}</a></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Email</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;font-weight:600;"><a href="mailto:{{email}}" style="color:#65290f;text-decoration:none;">{{email}}</a></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Location / ZIP</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;font-weight:600;">{{location}}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Service</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;font-weight:600;">{{service}}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Project area</td>
+            <td style="padding:10px 0;border-bottom:1px solid #e6dacb;">{{project_type}}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:#73848e;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Timing</td>
+            <td style="padding:10px 0;">{{timing}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Message -->
+    <tr>
+      <td style="padding:16px 28px 0;">
+        <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#73848e;">Project notes</div>
+        <div style="margin-top:8px;padding:16px 18px;background-color:#f2ece4;border-left:3px solid #bc753f;border-radius:4px;font-size:15px;line-height:1.6;white-space:pre-line;">{{message}}</div>
+      </td>
+    </tr>
+
+    <!-- Actions -->
+    <tr>
+      <td style="padding:24px 28px 8px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="background-color:#65290f;border-radius:4px;">
+              <a href="tel:{{phone}}" style="display:inline-block;padding:12px 22px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Call {{name}}</a>
+            </td>
+            <td style="width:10px;">&nbsp;</td>
+            <td style="border:1px solid #65290f;border-radius:4px;">
+              <a href="mailto:{{email}}" style="display:inline-block;padding:11px 22px;font-size:14px;font-weight:700;color:#65290f;text-decoration:none;">Reply by email</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="padding:20px 28px 26px;font-size:12px;line-height:1.6;color:#73848e;">
+        Sent from the website form on <a href="{{page}}" style="color:#8c5226;">{{page}}</a>.<br />
+        The request is also saved in WordPress → Consultation Requests.
+      </td>
+    </tr>
+  </table>
+</div>

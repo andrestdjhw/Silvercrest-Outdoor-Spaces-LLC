@@ -12,6 +12,19 @@ define('SILVERCREST_MAP_QUERY', 'Las Vegas Valley, NV');
 // TODO: corporate email not purchased yet (questionnaire) — placeholder until confirmed.
 define('SILVERCREST_EMAIL', 'info@silvercrestoutdoorspaces.com');
 
+// Contact form email delivery (EmailJS, sent from the browser) — src/components/ContactForm.js.
+// These IDs and the public key are meant to be public. Each request is also stored in wp-admin
+// (Consultation Requests) and, if EmailJS fails, emailed with wp_mail as a fallback.
+define('SILVERCREST_EMAILJS_PUBLIC_KEY', 'SgxiMsDyVyIMrmEf-');
+define('SILVERCREST_EMAILJS_SERVICE_ID', 'service_rwlujyg');
+define('SILVERCREST_EMAILJS_TEMPLATE_ID', 'template_yjp4bn1');   // "Contact Us": notification to the business
+define('SILVERCREST_EMAILJS_AUTOREPLY_ID', 'template_ovrn0v8');  // "Auto-Reply": confirmation to the customer
+
+// Google reCAPTCHA v3 site key (public). The SECRET key never goes in the theme: add
+//   define('SILVERCREST_RECAPTCHA_SECRET', '...');
+// to wp-config.php. Without it, tokens are not verified (the other anti-spam checks still run).
+define('SILVERCREST_RECAPTCHA_SITE_KEY', '6LcSUC8uAAAAAB3YxSkDc06GX34mc9H_uiZ-Rozx');
+
 // Social profiles. Empty URLs are hidden in the topbar.
 // TODO: Instagram is still under the old name (@mendoza.lawnservices) — validate/rename before launch (brief, section 01).
 // TODO: Facebook, TikTok, YouTube and Google are DEMO links (platform home pages) — replace or empty before launch.
@@ -71,6 +84,14 @@ function silvercrest_load_assets() {
     ),
     'form'      => array(
       'endpoint'   => rest_url('silvercrest/v1/consultation'),
+      'notifyUrl'  => rest_url('silvercrest/v1/consultation/notify'),
+      'recaptcha'  => SILVERCREST_RECAPTCHA_SITE_KEY,
+      'emailjs'    => array(
+        'publicKey'   => SILVERCREST_EMAILJS_PUBLIC_KEY,
+        'serviceId'   => SILVERCREST_EMAILJS_SERVICE_ID,
+        'templateId'  => SILVERCREST_EMAILJS_TEMPLATE_ID,
+        'autoReplyId' => SILVERCREST_EMAILJS_AUTOREPLY_ID,
+      ),
       'privacyUrl' => get_privacy_policy_url(),
       'options'    => silvercrest_form_options(),
     ),
@@ -125,3 +146,23 @@ add_filter('updraftplus_exclude_directory', function ($exclude, $fullpath) {
   }
   return wp_normalize_path($fullpath) === wp_normalize_path(get_theme_file_path('/node_modules'));
 }, 10, 2);
+
+// Site icon (browser tab, bookmarks, phone home screen) from assets/icons/. Built from the
+// provisional logo mark; regenerate when the official logo arrives. If a Site Icon is set in
+// Appearance → Customize → Site Identity, WordPress prints that one instead.
+function silvercrest_site_icons() {
+  if (has_site_icon()) {
+    return;
+  }
+  $dir = get_theme_file_uri('/assets/icons');
+  $ver = filemtime(get_theme_file_path('/assets/icons/favicon.svg'));
+  printf('<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url("$dir/favicon.svg?v=$ver"));
+  printf('<link rel="icon" href="%s" sizes="32x32" type="image/png">' . "\n", esc_url("$dir/favicon-32.png?v=$ver"));
+  printf('<link rel="icon" href="%s" sizes="192x192" type="image/png">' . "\n", esc_url("$dir/icon-192.png?v=$ver"));
+  printf('<link rel="apple-touch-icon" href="%s">' . "\n", esc_url("$dir/apple-touch-icon.png?v=$ver"));
+  echo '<meta name="theme-color" content="#65290f">' . "\n";
+}
+
+add_action('wp_head', 'silvercrest_site_icons', 2);
+add_action('admin_head', 'silvercrest_site_icons');
+add_action('login_head', 'silvercrest_site_icons');

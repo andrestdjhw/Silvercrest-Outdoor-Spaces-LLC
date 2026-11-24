@@ -1,13 +1,15 @@
 import React, { useRef, useState } from "react"
 import { ArrowRight, PhoneIcon } from "./Icons"
 import { site } from "../data/site"
+import { emailjsSend, loadRecaptcha, recaptchaToken } from "../scripts/form-services"
 
 /**
  * Consultation request form (brief, section 09).
  * variant="full"    → /contact/ (all fields, incl. optional project area + timing)
  * variant="compact" → home hero (required fields + message)
  * cf-* classes are styling hooks (e.g. the translucent hero card, .hero-glass in index.css).
- * Backend: inc/contact-form.php
+ * Backend: inc/contact-form.php (validates + stores the request), then EmailJS sends the
+ * notification and the customer auto-reply (src/scripts/form-services.js). reCAPTCHA v3 token on submit.
  */
 
 const config = (window.silvercrestData && window.silvercrestData.form) || {}
@@ -35,6 +37,51 @@ function validate(v) {
   if (!v.service) errors.service = "Please choose a service."
   if (!v.consent) errors.consent = "Please confirm we can contact you."
   return errors
+}
+
+const emailjs = config.emailjs || {}
+
+// Variables available in both EmailJS templates ({{name}}, {{email}}, ...). Common aliases
+// (from_name, reply_to, ...) are included so either naming style works in the template.
+function templateParams(v, serviceLabel) {
+  const notes = v.notes.trim() || "(none)"
+  return {
+    name: v.name.trim(),
+    email: v.email.trim(),
+    phone: v.phone.trim(),
+    location: v.location.trim(),
+    service: serviceLabel,
+    project_type: v.projectType || "Not specified",
+    timing: v.timing || "Not specified",
+    message: notes,
+    page: window.location.href,
+    time: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "medium", timeStyle: "short" }),
+    from_name: v.name.trim(),
+    from_email: v.email.trim(),
+    reply_to: v.email.trim(),
+    to_name: site.name,
+    title: `Consultation request: ${serviceLabel}`,
+    company: site.name,
+    company_phone: site.phone
+  }
+}
+
+async function sendEmails(values, data) {
+  const params = templateParams(values, data.service || values.service)
+  try {
+    await emailjsSend(emailjs, emailjs.templateId, params)
+  } catch (err) {
+    // Notification didn't go out: the request is already stored; ask WordPress to email it instead.
+    console.warn(err)
+    await fetch(config.notifyUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: data.id, token: data.token })
+    }).catch(() => {})
+  }
+  if (emailjs.autoReplyId) {
+    await emailjsSend(emailjs, emailjs.autoReplyId, params).catch(err => console.warn(err))
+  }
 }
 
 const fieldOrder = ["name", "phone", "email", "location", "service", "consent"]
@@ -73,14 +120,16 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
     setStatus("sending")
     setServerMessage("")
     try {
+      const recaptcha = await recaptchaToken(config.recaptcha)
       const res = await fetch(config.endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, elapsed: Date.now() - startedAt.current, source: window.location.href })
+        body: JSON.stringify({ ...values, recaptcha, elapsed: Date.now() - startedAt.current, source: window.location.href })
       })
       const data = await res.json().catch(() => ({}))
 
       if (res.ok && data.ok) {
+        if (data.emailjs) await sendEmails(values, data)
         setStatus("success")
         // GA4 / GTM conversion (brief, section 09)
         window.dataLayer = window.dataLayer || []
@@ -135,7 +184,7 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
   })
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} noValidate className={`cf-form ${compact ? "space-y-3" : "space-y-4"}`}>
+    <form ref={formRef} onSubmit={onSubmit} onFocus={() => loadRecaptcha(config.recaptcha)} noValidate className={`cf-form ${compact ? "space-y-3" : "space-y-4"}`}>
       {/* Honeypot — hidden from people and assistive tech */}
       <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
         <label htmlFor={id("company_website")}>Company website</label>
@@ -261,6 +310,20 @@ export default function ContactForm({ variant = "full", idPrefix = "cf" }) {
         {status === "sending" ? "Sending…" : "Request a Consultation"}
         {status !== "sending" && <ArrowRight className="h-4 w-4" />}
       </button>
+
+      {config.recaptcha && (
+        <p className="cf-muted text-center text-[0.7rem] leading-relaxed text-ink/55">
+          Protected by reCAPTCHA. Google{" "}
+          <a href="https://policies.google.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">
+            Privacy
+          </a>{" "}
+          and{" "}
+          <a href="https://policies.google.com/terms" className="underline" target="_blank" rel="noopener noreferrer">
+            Terms
+          </a>{" "}
+          apply.
+        </p>
+      )}
 
       {compact && (
         <p className="cf-alt cf-muted text-center text-xs text-ink/70">

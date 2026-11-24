@@ -662,3 +662,6 @@ iframe.skiptranslate,
 .goog-text-highlight,
 .VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q { background: none !important; box-shadow: none !important; }
 font { background: transparent !important; }
+
+/* reCAPTCHA v3: the floating badge is hidden; the form shows Google's required notice instead */
+.grecaptcha-badge { visibility: hidden !important; }

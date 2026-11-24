@@ -5,8 +5,11 @@
  * POST /wp-json/silvercrest/v1/consultation
  * - Validates fields from the brief (section 09).
  * - Saves every request as a private "Consultation Request" in wp-admin (nothing is lost if email fails).
- * - Emails the notification recipient with Reply-To set to the customer.
- * - Anti-spam: honeypot + minimum fill time + per-IP rate limit. Add reCAPTCHA/Turnstile before launch if spam appears.
+ * - Email: EmailJS sends the notification + customer auto-reply from the browser (ids in functions.php).
+ *   If EmailJS fails, the browser calls /consultation/notify and wp_mail sends the notification instead.
+ *   Without EmailJS configured, wp_mail sends it right away.
+ * - Anti-spam: reCAPTCHA v3 (verified only when SILVERCREST_RECAPTCHA_SECRET is defined in wp-config.php)
+ *   + honeypot + minimum fill time + per-IP rate limit.
  *
  * Launch checklist (brief, section 13): transactional SMTP + SPF/DKIM/DMARC on the corporate domain.
  */
@@ -89,6 +92,85 @@ function silvercrest_register_form_route() {
 
 add_action('rest_api_init', 'silvercrest_register_form_route');
 
+function silvercrest_emailjs_enabled() {
+  return defined('SILVERCREST_EMAILJS_PUBLIC_KEY') && SILVERCREST_EMAILJS_PUBLIC_KEY
+    && defined('SILVERCREST_EMAILJS_SERVICE_ID') && SILVERCREST_EMAILJS_SERVICE_ID
+    && defined('SILVERCREST_EMAILJS_TEMPLATE_ID') && SILVERCREST_EMAILJS_TEMPLATE_ID;
+}
+
+/**
+ * reCAPTCHA v3: true when the token checks out, or when no secret is configured (not enforced yet).
+ */
+function silvercrest_verify_recaptcha($token) {
+  if (!defined('SILVERCREST_RECAPTCHA_SECRET') || !SILVERCREST_RECAPTCHA_SECRET) {
+    return true;
+  }
+  if (!$token) {
+    return false;
+  }
+  $response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+    'timeout' => 8,
+    'body'    => array(
+      'secret'   => SILVERCREST_RECAPTCHA_SECRET,
+      'response' => $token,
+      'remoteip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
+    ),
+  ));
+  if (is_wp_error($response)) {
+    return true; // Google unreachable: don't lose a real lead over it; the other checks still apply.
+  }
+  $result = json_decode(wp_remote_retrieve_body($response), true);
+  return !empty($result['success'])
+    && (!isset($result['action']) || $result['action'] === 'consultation')
+    && (isset($result['score']) ? (float) $result['score'] >= 0.5 : true);
+}
+
+/** Signed token that lets the browser ask for the wp_mail fallback for one stored request. */
+function silvercrest_notify_token($post_id) {
+  return wp_hash('silvercrest-notify-' . (int) $post_id);
+}
+
+function silvercrest_send_notification($post_id) {
+  $post = get_post($post_id);
+  if (!$post || $post->post_type !== 'consultation_req') {
+    return false;
+  }
+  $name  = $post->post_title;
+  $email = get_post_meta($post_id, '_req_email', true);
+  $label = get_post_meta($post_id, '_req_service_label', true);
+  return wp_mail(
+    silvercrest_form_recipient(),
+    "New consultation request: {$name} ({$label})",
+    $post->post_content,
+    array('Reply-To: ' . $name . ' <' . $email . '>')
+  );
+}
+
+function silvercrest_register_notify_route() {
+  register_rest_route('silvercrest/v1', '/consultation/notify', array(
+    'methods'             => 'POST',
+    'callback'            => 'silvercrest_handle_notify',
+    'permission_callback' => '__return_true',
+  ));
+}
+
+add_action('rest_api_init', 'silvercrest_register_notify_route');
+
+// EmailJS failed in the browser → send the notification with wp_mail (once per request).
+function silvercrest_handle_notify(WP_REST_Request $request) {
+  $p     = $request->get_json_params();
+  $id    = isset($p['id']) ? (int) $p['id'] : 0;
+  $token = isset($p['token']) && is_string($p['token']) ? $p['token'] : '';
+  if (!$id || !hash_equals(silvercrest_notify_token($id), $token)) {
+    return new WP_REST_Response(array('ok' => false), 403);
+  }
+  if (!get_post_meta($id, '_req_notified', true)) {
+    update_post_meta($id, '_req_notified', 'wp_mail');
+    silvercrest_send_notification($id);
+  }
+  return new WP_REST_Response(array('ok' => true), 200);
+}
+
 function silvercrest_handle_consultation(WP_REST_Request $request) {
   $p = $request->get_json_params();
   if (!is_array($p)) {
@@ -103,6 +185,10 @@ function silvercrest_handle_consultation(WP_REST_Request $request) {
   $elapsed = (int) $field('elapsed');
   if ($field('company_website') !== '' || $elapsed < 3000) {
     return new WP_REST_Response(array('ok' => true), 200);
+  }
+
+  if (!silvercrest_verify_recaptcha($field('recaptcha'))) {
+    return new WP_REST_Response(array('ok' => false, 'message' => 'We couldn’t verify your request. Please try again or call us.'), 403);
   }
 
   // Rate limit: 5 requests per IP per 10 minutes.
@@ -178,13 +264,25 @@ function silvercrest_handle_consultation(WP_REST_Request $request) {
     update_post_meta($post_id, '_req_service_label', $service_label);
   }
 
-  // 2) Notify
-  wp_mail(
-    silvercrest_form_recipient(),
-    "New consultation request: {$data['name']} ({$service_label})",
-    $summary,
-    array('Reply-To: ' . $data['name'] . ' <' . $data['email'] . '>')
-  );
+  if (!$post_id || is_wp_error($post_id)) {
+    // Couldn't store it: email it right away so the lead isn't lost.
+    wp_mail(silvercrest_form_recipient(), "New consultation request: {$data['name']} ({$service_label})", $summary,
+      array('Reply-To: ' . $data['name'] . ' <' . $data['email'] . '>'));
+    return new WP_REST_Response(array('ok' => true, 'emailjs' => false), 200);
+  }
 
-  return new WP_REST_Response(array('ok' => true), 200);
+  // 2) Notify: EmailJS (browser) when configured, else wp_mail now.
+  if (silvercrest_emailjs_enabled()) {
+    return new WP_REST_Response(array(
+      'ok'      => true,
+      'emailjs' => true,
+      'id'      => $post_id,
+      'token'   => silvercrest_notify_token($post_id),
+      'service' => $service_label,
+    ), 200);
+  }
+
+  update_post_meta($post_id, '_req_notified', 'wp_mail');
+  silvercrest_send_notification($post_id);
+  return new WP_REST_Response(array('ok' => true, 'emailjs' => false), 200);
 }
