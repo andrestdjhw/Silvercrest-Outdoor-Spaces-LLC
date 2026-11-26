@@ -66,13 +66,18 @@ require get_theme_file_path('/inc/contact-form.php');
 function silvercrest_load_assets() {
   $asset = include get_theme_file_path('/build/index.asset.php');
 
-  // Roboto (brand proposal) as Roboto Flex: its width axis drives the condensed headings and extended labels.
-  wp_enqueue_style('silvercrest-fonts', 'https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,300..800&display=swap', array(), null);
-  wp_enqueue_style('silvercrest-main', get_theme_file_uri('/build/index.css'), array('silvercrest-fonts'), filemtime(get_theme_file_path('/build/index.css')));
+  // Fonts: Roboto + Roboto Condensed, self-hosted (@font-face in src/index.css, files in assets/fonts/web).
+  wp_enqueue_style('silvercrest-main', get_theme_file_uri('/build/index.css'), array(), filemtime(get_theme_file_path('/build/index.css')));
 
   wp_enqueue_script('silvercrest-main', get_theme_file_uri('/build/index.js'), $asset['dependencies'], $asset['version'], true);
   wp_localize_script('silvercrest-main', 'silvercrestData', array(
     'homeUrl'   => home_url('/'),
+    'brand'     => array(
+      'imagotipoDark'   => silvercrest_brand_url('imagotipo-dark'),
+      'imagotipoLight'  => silvercrest_brand_url('imagotipo-light'),
+      'horizontalDark'  => silvercrest_brand_url('logotipo-horizontal-dark'),
+      'verticalLight'   => silvercrest_brand_url('imagotipo-vertical-light'),
+    ),
     'phone'     => SILVERCREST_PHONE,
     'phoneHref' => SILVERCREST_PHONE_HREF,
     'email'     => SILVERCREST_EMAIL,
@@ -100,15 +105,15 @@ function silvercrest_load_assets() {
 
 add_action('wp_enqueue_scripts', 'silvercrest_load_assets');
 
-function silvercrest_resource_hints($urls, $relation_type) {
-  if ($relation_type === 'preconnect') {
-    $urls[] = 'https://fonts.googleapis.com';
-    $urls[] = array('href' => 'https://fonts.gstatic.com', 'crossorigin');
+// Preload the two faces every page shows above the fold (body text + headings), so text
+// doesn't swap fonts after the first paint.
+function silvercrest_preload_fonts() {
+  foreach (array('roboto-regular', 'roboto-boldcondensed') as $font) {
+    printf('<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n", esc_url(get_theme_file_uri("/assets/fonts/web/{$font}.woff2")));
   }
-  return $urls;
 }
 
-add_filter('wp_resource_hints', 'silvercrest_resource_hints', 10, 2);
+add_action('wp_head', 'silvercrest_preload_fonts', 1);
 
 function silvercrest_add_support() {
   add_theme_support('title-tag');
@@ -147,17 +152,18 @@ add_filter('updraftplus_exclude_directory', function ($exclude, $fullpath) {
   return wp_normalize_path($fullpath) === wp_normalize_path(get_theme_file_path('/node_modules'));
 }, 10, 2);
 
-// Site icon (browser tab, bookmarks, phone home screen) from assets/icons/. Built from the
-// provisional logo mark; regenerate when the official logo arrives. If a Site Icon is set in
-// Appearance → Customize → Site Identity, WordPress prints that one instead.
+// Site icon (browser tab, bookmarks, phone home screen) from assets/icons/: the official SC
+// monogram (Media Library "SC_Monograma", without the ™) in cream on Frenchman Rust. If a Site
+// Icon is set in Appearance → Customize → Site Identity, WordPress prints that one instead.
 function silvercrest_site_icons() {
   if (has_site_icon()) {
     return;
   }
   $dir = get_theme_file_uri('/assets/icons');
-  $ver = filemtime(get_theme_file_path('/assets/icons/favicon.svg'));
-  printf('<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url("$dir/favicon.svg?v=$ver"));
+  $ver = filemtime(get_theme_file_path('/assets/icons/favicon-32.png'));
+  printf('<link rel="icon" href="%s" sizes="48x48">' . "\n", esc_url("$dir/favicon.ico?v=$ver"));
   printf('<link rel="icon" href="%s" sizes="32x32" type="image/png">' . "\n", esc_url("$dir/favicon-32.png?v=$ver"));
+  printf('<link rel="icon" href="%s" sizes="16x16" type="image/png">' . "\n", esc_url("$dir/favicon-16.png?v=$ver"));
   printf('<link rel="icon" href="%s" sizes="192x192" type="image/png">' . "\n", esc_url("$dir/icon-192.png?v=$ver"));
   printf('<link rel="apple-touch-icon" href="%s">' . "\n", esc_url("$dir/apple-touch-icon.png?v=$ver"));
   echo '<meta name="theme-color" content="#65290f">' . "\n";
@@ -166,3 +172,22 @@ function silvercrest_site_icons() {
 add_action('wp_head', 'silvercrest_site_icons', 2);
 add_action('admin_head', 'silvercrest_site_icons');
 add_action('login_head', 'silvercrest_site_icons');
+
+// Official logo and brand colors on the WordPress login screen. Printed in login_head (after
+// WordPress's own login styles) so it wins without !important.
+function silvercrest_login_logo() {
+  $logo = esc_url(get_theme_file_uri('/assets/images/brand/imagotipo-dark.png'));
+  echo "<style>
+    body.login { background: #f2ece4; }
+    body.login h1.wp-login-logo a { background: url('{$logo}') center / contain no-repeat; width: 240px; height: 126px; }
+    body.login .button.button-primary { background: #65290f; border-color: #65290f; color: #fff; }
+    body.login .button.button-primary:hover, body.login .button.button-primary:focus { background: #4a1d09; border-color: #4a1d09; }
+    body.login input:focus { border-color: #65290f; box-shadow: 0 0 0 1px #65290f; }
+    body.login .button-secondary, body.login .dashicons { color: #65290f; }
+    body.login #backtoblog a, body.login #nav a { color: #8c5226; }
+  </style>";
+}
+
+add_action('login_head', 'silvercrest_login_logo', 20);
+add_filter('login_headerurl', function () { return home_url('/'); });
+add_filter('login_headertext', function () { return 'Silvercrest Outdoor Spaces'; });

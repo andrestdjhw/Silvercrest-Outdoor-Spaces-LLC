@@ -46,7 +46,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="col-span-2 lg:col-span-4">
           <a href={url("/")} aria-label={`${site.name} — Home`} className="inline-block">
-            <Logo variant="light" />
+            <Logo variant="vertical" className="h-36" />
           </a>
           <p className="mt-6 max-w-xs text-sm leading-relaxed text-cream/70">
             We design, build and care for outdoor spaces made for desert living, so you can use your yard in July, not just in March.

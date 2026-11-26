@@ -45,7 +45,7 @@ get_header(); ?>
         <div class="pointer-events-none absolute inset-0 -z-10 hidden bg-[radial-gradient(38rem_circle_at_var(--mx,50%)_var(--my,35%),rgb(214_160_121/0.2),transparent_60%)] lg:block" aria-hidden="true"></div>
 
         <h1 class="max-w-2xl font-display text-5xl font-bold leading-[0.98] text-cream sm:text-6xl lg:text-7xl">
-          Your Yard, Back. <span class="kmark text-sunset relative inline-block">Even in July.<svg class="kmark__line pointer-events-none absolute -bottom-2 left-0 h-3 w-full text-copper" viewBox="0 0 300 12" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M3 8.5C48 3.5 96 2.8 150 5.2s104 4.6 147-1.4" stroke="currentColor" stroke-width="3" stroke-linecap="round" pathLength="1" vector-effect="non-scaling-stroke"/></svg></span>
+          Your Yard, Back. <span class="kmark text-sunset relative inline-block">All Year Round.<svg class="kmark__line pointer-events-none absolute -bottom-2 left-0 h-3 w-full text-copper" viewBox="0 0 300 12" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M3 8.5C48 3.5 96 2.8 150 5.2s104 4.6 147-1.4" stroke="currentColor" stroke-width="3" stroke-linecap="round" pathLength="1" vector-effect="non-scaling-stroke"/></svg></span>
         </h1>
         <p data-reveal class="mt-6 max-w-lg text-base leading-relaxed text-cream/90 sm:text-lg">
           Shade where you sit, plants that sip water, stone that takes the heat. We design, build and care for outdoor spaces made for the desert.

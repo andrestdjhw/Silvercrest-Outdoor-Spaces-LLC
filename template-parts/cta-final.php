@@ -11,6 +11,10 @@
   </div>
 
   <div class="mx-auto max-w-3xl px-4 sm:px-6">
+    <!-- Small seal (proposal p. 31: the small-size version), like the plate set on a finished project -->
+    <div data-reveal="zoom" class="mb-6 flex justify-center">
+      <?php silvercrest_brand_logo('sello-reducido-light', 'h-20 w-auto opacity-90 sm:h-24', 'Silvercrest Outdoor Spaces seal'); ?>
+    </div>
     <?php silvercrest_annotation(array('7:00 A.M.', '6:30 P.M.', 'The hours we design for'), 'text-peach'); ?>
     <h2 class="mt-5 font-display text-4xl font-bold leading-[0.98] text-cream sm:text-6xl">
       Stay Out a Little Longer

@@ -113,8 +113,8 @@ get_header(); ?>
 
       <!-- Mission & vision -->
       <div class="mt-20 grid items-center gap-12 lg:mt-28 lg:grid-cols-12">
-        <div class="seal-spin flex justify-center lg:col-span-4" data-reveal="zoom">
-          <?php silvercrest_seal('h-56 w-56 drop-shadow-2xl sm:h-72 sm:w-72', 'light'); ?>
+        <div class="seal-float flex justify-center lg:col-span-4" data-reveal="zoom">
+          <?php silvercrest_seal('h-auto w-64 drop-shadow-2xl sm:w-80', 'light'); ?>
         </div>
         <dl class="divide-y divide-cream/15 rounded-md border border-cream/15 bg-ink/40 px-7 backdrop-blur-md sm:px-10 lg:col-span-8">
           <div class="grid gap-3 py-8 sm:grid-cols-4" data-reveal>
