@@ -35,7 +35,7 @@ get_header(); ?>
           </a>
         </div>
       </div>
-      <?php silvercrest_image("locations/{$slug}-overview", 'Landscape project in ' . $location['city'], 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
+      <?php silvercrest_image("locations/{$slug}-overview", 'Landscape project in ' . $location['city'], 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
     </div>
   </section>
 

@@ -22,9 +22,10 @@ function silvercrest_stock_map() {
 
     // Hubs & single pages
     'services/services-hero'           => 'desert-home-modern',
-    'projects/projects-hero'           => 'pergola-dining',
+    'projects/projects-hero'           => 'patio-firepit',
     'about/about-hero'                 => 'crew-wheelbarrow',
     'about/team'                       => 'crew-shovel',
+    'about/values-bg'                  => 'desert-mountains',
     'process/process-hero'             => 'desert-home-modern',
     'process/step-1'                   => 'desert-home-driveway',
     'process/step-2'                   => 'cactus-garden-path',
@@ -59,6 +60,31 @@ function silvercrest_stock_map() {
     $map["services/{$slug}-1"]        = $files[2];
     $map["services/{$slug}-2"]        = $files[3];
     $map["services/{$slug}-3"]        = $files[4];
+  }
+
+  // "What We Focus On" photo cards: one photo per highlight, in order
+  $focus = array(
+    'landscape-design'       => array('desert-home-modern', 'stone-texture', 'agave-detail', 'night-garden-lights'),
+    'landscape-installation' => array('crew-shovel', 'paved-walkway', 'barrel-cactus-gravel', 'night-path-light'),
+    'desert-landscaping'     => array('desert-home-spanish', 'agave-detail', 'stone-texture', 'sprinkler-tree'),
+    'paver-installation'     => array('brick-garden-path', 'patio-firepit', 'paver-patio-circle', 'covered-patio'),
+    'artificial-turf'        => array('modern-home-hedges', 'turf-install', 'pergola-dining'),
+    'irrigation-systems'     => array('sprinklers-lawn', 'gravel-garden', 'sprinkler-tree'),
+    'landscape-lighting'     => array('night-path-light', 'night-garden-lights', 'patio-sunset'),
+    'tree-palm-services'     => array('palm-trees', 'palms-neighborhood', 'desert-home-driveway'),
+    'landscape-maintenance'  => array('crew-wheelbarrow', 'desert-mountains', 'sprinklers-lawn'),
+  );
+  // "How we work" photo on service pages (template-parts/process-steps.php), where the Media
+  // Library has nothing fitting that the page doesn't already show.
+  $map['services/desert-landscaping-process']    = 'cactus-garden-path';
+  $map['services/irrigation-systems-process']    = 'drip-line';
+  $map['services/tree-palm-services-process']    = 'palm-trim';
+  $map['services/landscape-maintenance-process'] = 'hedge-trim';
+
+  foreach ($focus as $slug => $files) {
+    foreach ($files as $i => $file) {
+      $map["services/{$slug}-focus-" . ($i + 1)] = $file;
+    }
   }
 
   return $map;

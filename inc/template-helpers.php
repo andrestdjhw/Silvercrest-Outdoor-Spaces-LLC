@@ -35,8 +35,41 @@ function silvercrest_image_path($slug) {
  * Public URL of the photo for a slot, or '' (used to pass images to React).
  */
 function silvercrest_image_url($slug) {
+  if ($media = silvercrest_media_for($slug)) {
+    return (string) wp_get_attachment_image_url($media[0], 'large');
+  }
   $path = silvercrest_image_path($slug);
   return $path ? get_theme_file_uri($path) : '';
+}
+
+/**
+ * Muted, looping background video. No poster: the slot photo is a different scene and would
+ * flash before the first frame; the photo is only the fallback when the attachment is missing.
+ * Reduced motion: src/scripts/hero-video.js pauses it on the first frame.
+ * $lazy = true: no autoplay and preload="none", so nothing downloads until hero-video.js plays it
+ * on screen (for videos below the fold or hidden on mobile).
+ */
+function silvercrest_video($attachment_id, $poster_slug, $alt, $class = '', $mobile_id = 0, $lazy = false) {
+  $is_video = function ($id) {
+    return $id && strpos((string) get_post_mime_type($id), 'video/') === 0 && wp_get_attachment_url($id);
+  };
+  if (!$is_video($attachment_id)) {
+    silvercrest_image($poster_slug, $alt, $class, true);
+    return;
+  }
+  // The browser takes the first <source> whose media matches, so the phone cut goes first.
+  $sources = '';
+  if ($is_video($mobile_id)) {
+    $sources .= sprintf('<source src="%s" type="video/mp4" media="(max-width: 639px)">', esc_url(wp_get_attachment_url($mobile_id)));
+  }
+  $sources .= sprintf('<source src="%s" type="video/mp4">', esc_url(wp_get_attachment_url($attachment_id)));
+  printf(
+    '<video class="%1$s"%3$s muted loop playsinline preload="%4$s" disablepictureinpicture aria-hidden="true" data-bg-video>%2$s</video>',
+    esc_attr($class),
+    $sources,
+    $lazy ? '' : ' autoplay',
+    $lazy ? 'none' : 'auto'
+  );
 }
 
 /**
@@ -44,9 +77,10 @@ function silvercrest_image_url($slug) {
  * (src/scripts/stretch.js). Never use it on photos of people or with the logo in frame.
  */
 function silvercrest_image($slug, $alt, $class = '', $priority = false, $reveal = false, $stretch = '') {
-  $found    = silvercrest_image_path($slug);
+  $media    = silvercrest_media_for($slug); // real photo in the Media Library (inc/media-map.php)
+  $found    = $media ? null : silvercrest_image_path($slug);
   $is_stock = $found && strpos($found, '/_stock/') !== false;
-  $stretch  = $found && in_array($stretch, array('left', 'right'), true) ? $stretch : '';
+  $stretch  = ($found || $media) && in_array($stretch, array('left', 'right'), true) ? $stretch : '';
   $wrap     = $reveal || $stretch;
 
   if ($wrap) {
@@ -59,7 +93,17 @@ function silvercrest_image($slug, $alt, $class = '', $priority = false, $reveal 
     $class = 'h-full w-full object-cover';
   }
 
-  if ($found) {
+  if ($media) {
+    // Full-bleed heroes are the priority images; everything else sits in a half or third column.
+    echo wp_get_attachment_image($media[0], $priority ? 'full' : 'large', false, array(
+      'alt'           => $media[1],
+      'class'         => $class,
+      'sizes'         => $priority ? '100vw' : '(min-width: 1024px) 50vw, 100vw',
+      'loading'       => $priority ? false : 'lazy',
+      'fetchpriority' => $priority ? 'high' : false,
+      'decoding'      => 'async',
+    ) + ($reveal ? array('data-scroll-zoom' => '') : array()));
+  } elseif ($found) {
     printf(
       '<img src="%1$s" alt="%2$s" class="%3$s" %4$s decoding="async"%5$s%6$s>',
       esc_url(get_theme_file_uri($found)),
@@ -185,37 +229,38 @@ function silvercrest_isotype($class = 'h-6 w-20') {
 }
 
 /**
- * Seal (brand proposal): hexagonal like a paver, inspired by geodetic survey markers.
- * Ring: name, DESIGN · BUILD · CARE and the cities; isotype at the center.
- * PROVISIONAL recreation; replace with the official vector when delivered.
- *
- * $tone: 'brand' (rust + copper, light backgrounds) | 'light' (one ink, on dark backgrounds)
+ * Official logo files (assets/images/brand, made from the Media Library PNGs). Variants per the
+ * proposal (p. 30): imagotipo (main), imagotipo-vertical, logotipo-horizontal, monograma,
+ * sello (main seal), sello-reducido (small sizes). Each in -dark (rust + copper, light backgrounds)
+ * and -light (white + copper, dark backgrounds).
  */
-function silvercrest_seal($class = 'h-40 w-40', $tone = 'brand') {
-  static $n = 0;
-  $id    = 'sc-seal-' . (++$n);
-  $outer = $tone === 'light' ? 'var(--color-cream)' : 'var(--color-rust)';
-  $inner = $tone === 'light' ? 'var(--color-peach)' : 'var(--color-copper)';
-  ?>
-  <svg class="<?php echo esc_attr($class); ?>" viewBox="0 0 200 200" role="img" aria-label="Silvercrest Outdoor Spaces seal: Design, Build, Care. Las Vegas and Henderson.">
-    <defs>
-      <path id="<?php echo $id; ?>-o" d="M44 100a56 56 0 1 1 112 0a56 56 0 1 1-112 0"/>
-      <path id="<?php echo $id; ?>-i" d="M59 100a41 41 0 1 1 82 0a41 41 0 1 1-82 0"/>
-    </defs>
-    <path d="M10 100 55 22h90l45 78-45 78H55z" fill="none" stroke="<?php echo $outer; ?>" stroke-width="7" stroke-linejoin="miter"/>
-    <circle cx="100" cy="100" r="76" fill="none" stroke="<?php echo $inner; ?>" stroke-width="3"/>
-    <circle cx="100" cy="100" r="33" fill="none" stroke="<?php echo $inner; ?>" stroke-width="2.5"/>
-    <g font-family="Roboto Flex, Roboto Condensed, sans-serif" font-weight="800" style="font-variation-settings:'wdth' 30" fill="<?php echo $outer; ?>">
-      <text font-size="18"><textPath href="#<?php echo $id; ?>-o" textLength="342" lengthAdjust="spacing">SILVERCREST · OUTDOOR SPACES ·</textPath></text>
-      <text font-size="8.5"><textPath href="#<?php echo $id; ?>-i" textLength="250" lengthAdjust="spacing">DESIGN · BUILD · CARE · LAS VEGAS · HENDERSON ·</textPath></text>
-    </g>
-    <g transform="translate(78 88) scale(.44)" fill="<?php echo $inner; ?>">
-      <clipPath id="<?php echo $id; ?>-c"><path d="M4 34C14 21 24 4.5 39 3c8-.8 13 4.5 17 7 4-3.2 8-4.6 13-4 12 1.6 20 15 27 28z"/></clipPath>
-      <g clip-path="url(#<?php echo $id; ?>-c)"><rect width="100" height="14.5"/><rect y="17.5" width="100" height="3.6"/><rect y="24" width="100" height="3"/><rect y="29.8" width="100" height="2.4"/></g>
-      <rect y="33" width="100" height="1"/>
-    </g>
-  </svg>
-  <?php
+function silvercrest_brand_url($name) {
+  return get_theme_file_uri("/assets/images/brand/{$name}.png");
+}
+
+/** <img> of a logo variant; width/height are the file's, so the browser reserves the space. */
+function silvercrest_brand_logo($name, $class = '', $alt = 'Silvercrest Outdoor Spaces') {
+  $path = get_theme_file_path("/assets/images/brand/{$name}.png");
+  $size = file_exists($path) ? getimagesize($path) : array(0, 0);
+  printf(
+    '<img src="%s" width="%d" height="%d" alt="%s" class="notranslate %s" translate="no" loading="lazy" decoding="async">',
+    esc_url(silvercrest_brand_url($name)), $size[0], $size[1], esc_attr($alt), esc_attr($class)
+  );
+}
+
+/**
+ * Official seal ("Sello principal": hexagon, SILVERCREST · OUTDOOR SPACES, DESIGN · BUILD · CARE).
+ * $tone: 'light' (white + copper, on dark backgrounds) | 'brand' (rust + copper, on light ones).
+ * Files: assets/images/brand/sello-{light,dark}.png, made from the Media Library PNG.
+ */
+function silvercrest_seal($class = 'h-40 w-auto', $tone = 'brand') {
+  $file = $tone === 'light' ? 'sello-light.png' : 'sello-dark.png';
+  printf(
+    '<img src="%s" width="640" height="556" alt="%s" class="%s" loading="lazy" decoding="async">',
+    esc_url(get_theme_file_uri("/assets/images/brand/{$file}")),
+    esc_attr('Silvercrest Outdoor Spaces seal: Design, Build, Care. Las Vegas and Henderson.'),
+    esc_attr($class)
+  );
 }
 
 /**
@@ -223,4 +268,18 @@ function silvercrest_seal($class = 'h-40 w-40', $tone = 'brand') {
  */
 function silvercrest_annotation($parts, $class = 'text-copper-dark') {
   printf('<p class="annotation %1$s">%2$s</p>', esc_attr($class), esc_html(implode(' · ', array_filter($parts))));
+}
+
+/**
+ * Google Maps embed (no API key), lazy-loaded, warmed to the palette.
+ * $query: a place, never an address of ours (brand rule). $class sizes the wrapper.
+ */
+function silvercrest_map_embed($query, $title, $zoom = 11, $class = 'aspect-[16/10]') {
+  $src = 'https://maps.google.com/maps?q=' . rawurlencode($query) . '&z=' . (int) $zoom . '&hl=en&output=embed';
+  printf(
+    '<div class="relative overflow-hidden bg-sand %1$s"><iframe src="%2$s" title="%3$s" class="absolute inset-0 h-full w-full border-0 [filter:saturate(.75)_sepia(.12)]" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>',
+    esc_attr($class),
+    esc_url($src),
+    esc_attr($title)
+  );
 }

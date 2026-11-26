@@ -4,9 +4,12 @@ import { createRoot } from "react-dom/client"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import ContactForm from "./components/ContactForm"
+import LanguageSwitcher from "./components/LanguageSwitcher"
 import initReveal from "./scripts/reveal"
 import initMotion from "./scripts/motion"
 import initStretch from "./scripts/stretch"
+import initBgVideo from "./scripts/hero-video"
+import initServicePreview from "./scripts/service-preview"
 
 // Render synchronously so React-built markup (footer giant text, etc.) exists
 // before the motion system scans the page.
@@ -21,6 +24,9 @@ if (navbar) render(navbar, <Navbar />)
 const footer = document.getElementById("silvercrest-footer")
 if (footer) render(footer, <Footer />)
 
+const translator = document.getElementById("silvercrest-translator")
+if (translator) render(translator, <LanguageSwitcher />)
+
 // Contact forms: <div data-react="contact-form" data-variant="full|compact"></div>
 document.querySelectorAll('[data-react="contact-form"]').forEach((el, i) => {
   render(el, <ContactForm variant={el.dataset.variant || "full"} idPrefix={`cf${i}`} />)
@@ -29,3 +35,5 @@ document.querySelectorAll('[data-react="contact-form"]').forEach((el, i) => {
 initStretch() // before motion: it opts its images out of the scroll zoom
 initMotion()
 initReveal()
+initBgVideo()
+initServicePreview()

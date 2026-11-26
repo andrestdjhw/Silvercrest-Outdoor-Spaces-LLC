@@ -1,6 +1,6 @@
 # Temporary stock photos
 
-Unsplash License (https://unsplash.com/license). Placeholders only — the brief requires real Silvercrest project photos at launch. Delete this folder and set SILVERCREST_STOCK_IMAGES to false before going live.
+Unsplash License (https://unsplash.com/license). Photos used in full-width heroes are the 2400px downloads; the rest are 1600px. Placeholders only — the brief requires real Silvercrest project photos at launch. Delete this folder and set SILVERCREST_STOCK_IMAGES to false before going live.
 
 | File | Source |
 |---|---|
@@ -33,3 +33,6 @@ Unsplash License (https://unsplash.com/license). Placeholders only — the brief
 | green-lawn.jpg | https://unsplash.com/photos/JUNyb_cetns |
 | modern-home-hedges.jpg | https://unsplash.com/photos/4b25Ic2VjiQ |
 | brick-garden-path.jpg | https://unsplash.com/photos/aqqx2yrVB2M |
+| palm-trim.jpg | https://unsplash.com/photos/Kqjd-hqbNks |
+| drip-line.jpg | https://unsplash.com/photos/3f7AWW0YWAA |
+| hedge-trim.jpg | https://unsplash.com/photos/JB-QHEehcwI |

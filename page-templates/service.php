@@ -29,19 +29,40 @@ get_header(); ?>
         <?php endforeach; ?>
         <div class="mt-8" data-reveal><?php silvercrest_cta_button(); ?></div>
       </div>
-      <?php silvercrest_image("services/{$slug}-overview", $service['label'] . ' detail', 'aspect-[4/3] w-full rounded-sm object-cover', false, true, 'right'); ?>
+      <?php silvercrest_image("services/{$slug}-overview", $service['label'] . ' detail', 'aspect-[4/3] w-full rounded-sm object-cover', false, true); ?>
     </div>
   </section>
 
-  <!-- Highlights -->
-  <section class="bg-dune py-16 lg:py-20">
+  <!-- Highlights: photo cards (slots services/{slug}-focus-N; stock until real photos) -->
+  <?php $focus_count = count($service['highlights']); ?>
+  <section class="relative isolate overflow-hidden bg-dune py-16 lg:py-24">
+    <div class="strata-field strata-field-light absolute inset-x-0 bottom-0 -z-10 h-1/2" aria-hidden="true"></div>
     <div class="container-site">
-      <?php silvercrest_section_heading('What We Focus On'); ?>
-      <ul class="mt-12 grid gap-8 sm:grid-cols-2 <?php echo count($service['highlights']) === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'; ?>">
-        <?php foreach ($service['highlights'] as $item) : ?>
-          <li class="border-t-2 border-copper/60 pt-5" data-reveal>
-            <h3 class="font-display text-xl font-semibold text-ink"><?php echo esc_html($item['title']); ?></h3>
-            <p class="mt-2 text-sm leading-relaxed text-ink/75"><?php echo esc_html($item['text']); ?></p>
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <?php silvercrest_annotation(array($service['label'], 'What we focus on'), 'text-copper-dark'); ?>
+          <h2 class="mt-4 max-w-xl font-display text-4xl font-bold leading-[1] text-ink sm:text-5xl">
+            <?php echo esc_html($focus_count === 4 ? 'Four Things We Get Right' : 'Three Things We Get Right'); ?>
+          </h2>
+        </div>
+        <p class="max-w-sm leading-relaxed text-ink/75">The details that decide whether a yard gets used, planned from the first visit.</p>
+      </div>
+
+      <ul class="mt-12 grid gap-5 sm:grid-cols-2 <?php echo $focus_count === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'; ?>">
+        <?php foreach ($service['highlights'] as $i => $item) : ?>
+          <li data-reveal>
+            <article class="focus-card group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-md bg-ink sm:aspect-[3/4] p-6 text-cream shadow-xl shadow-ink/15 sm:p-7 <?php echo $focus_count === 3 ? 'lg:aspect-[4/5]' : ''; ?>">
+              <div class="absolute inset-0 -z-20" aria-hidden="true">
+                <?php silvercrest_image("services/{$slug}-focus-" . ($i + 1), '', 'h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]'); ?>
+              </div>
+              <div class="absolute inset-0 -z-10 bg-linear-to-t from-ink via-ink/55 to-ink/5 transition-opacity duration-500 group-hover:opacity-90" aria-hidden="true"></div>
+
+              <span class="text-sunset absolute left-6 top-5 font-display text-6xl font-bold leading-none sm:left-7 sm:top-6" aria-hidden="true"><?php echo esc_html(sprintf('%02d', $i + 1)); ?></span>
+
+              <span class="mb-4 block h-0.5 w-10 bg-peach transition-[width] duration-500 group-hover:w-16" aria-hidden="true"></span>
+              <h3 class="font-display text-2xl font-bold leading-tight sm:text-[1.7rem]"><?php echo esc_html($item['title']); ?></h3>
+              <p class="mt-2 text-sm leading-relaxed text-cream/85"><?php echo esc_html($item['text']); ?></p>
+            </article>
           </li>
         <?php endforeach; ?>
       </ul>
@@ -69,7 +90,12 @@ get_header(); ?>
     <?php get_template_part('template-parts/snwa-note', null, array('variant' => $service['snwa'])); ?>
   <?php endif; ?>
 
-  <?php get_template_part('template-parts/process-steps', null, array('link' => true)); ?>
+  <?php get_template_part('template-parts/process-steps', null, array(
+    'link'      => true,
+    'image'     => "services/{$slug}-process",
+    'image_alt' => $service['label'] . ' by Silvercrest Outdoor Spaces',
+    'tag'       => silvercrest_service_process_tag($slug),
+  )); ?>
 
   <?php if (!empty($service['faqs'])) : ?>
     <?php get_template_part('template-parts/faq', null, array('faqs' => $service['faqs'])); ?>

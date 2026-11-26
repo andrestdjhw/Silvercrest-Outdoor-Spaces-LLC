@@ -374,3 +374,77 @@ function silvercrest_page_seo() {
     'hoa-landscape-conversion' => array('HOA & Commercial Landscape Conversion | Silvercrest', 'Landscape conversion planning for HOAs and property managers in Las Vegas and Henderson: phased budgets, clear timelines and compliance-minded design.'),
   );
 }
+
+/**
+ * Client reviews for the home (template-parts/reviews.php).
+ * Real reviews only, copied word for word, with the client's permission. Attribute by first name
+ * + last initial or "Homeowner", plus the area. 'rating' (1-5) only if the review has one.
+ * Entries with 'demo' => true are layout samples: shown only while SILVERCREST_DEMO_REVIEWS is true.
+ */
+function silvercrest_reviews() {
+  $reviews = array(
+    array(
+      'demo'    => true,
+      'quote'   => 'They started by asking where the sun hits in the afternoon. Now we have shade over the patio and we eat outside again, even in summer.',
+      'name'    => 'Homeowner',
+      'area'    => 'Henderson',
+      'service' => 'Landscape Design',
+      'rating'  => 5,
+    ),
+    array(
+      'demo'    => true,
+      'quote'   => 'We knew what came next at every step. The crew kept the site clean and finished when they said they would.',
+      'name'    => 'Homeowner',
+      'area'    => 'Las Vegas',
+      'service' => 'Paver Installation',
+      'rating'  => 5,
+    ),
+    array(
+      'demo'    => true,
+      'quote'   => 'They explained the drip system and adjusted it for the season. The plants look better and the water bill went down.',
+      'name'    => 'Homeowner',
+      'area'    => 'Summerlin',
+      'service' => 'Irrigation',
+      'rating'  => 5,
+    ),
+  );
+
+  if (!SILVERCREST_DEMO_REVIEWS) {
+    $reviews = array_values(array_filter($reviews, function ($r) { return empty($r['demo']); }));
+  }
+  return $reviews;
+}
+
+/**
+ * /service-areas/ "Nearby areas": places close to the valley that may want a quote.
+ * NOT confirmed coverage (only Las Vegas and Henderson are): the page says availability is
+ * confirmed per project. Add a city to silvercrest_locations() only once coverage is validated.
+ */
+function silvercrest_nearby_areas() {
+  return array(
+    array('name' => 'North Las Vegas', 'county' => 'Clark County', 'query' => 'North Las Vegas, NV', 'zoom' => 12),
+    array('name' => 'Summerlin',       'county' => 'Clark County', 'query' => 'Summerlin, Las Vegas, NV', 'zoom' => 12),
+    array('name' => 'Spring Valley',   'county' => 'Clark County', 'query' => 'Spring Valley, NV', 'zoom' => 12),
+    array('name' => 'Enterprise',      'county' => 'Clark County', 'query' => 'Enterprise, NV', 'zoom' => 12),
+    array('name' => 'Boulder City',    'county' => 'Clark County', 'query' => 'Boulder City, NV', 'zoom' => 12),
+    array('name' => 'Pahrump',         'county' => 'Nye County',   'query' => 'Pahrump, NV', 'zoom' => 11),
+  );
+}
+
+/**
+ * Short phrase on the "How we work" photo of each service page (template-parts/process-steps.php).
+ */
+function silvercrest_service_process_tag($slug) {
+  $tags = array(
+    'landscape-design'       => 'Designed around how you live outside.',
+    'landscape-installation' => 'A clean site, start to finish.',
+    'desert-landscaping'     => 'Less water. More desert.',
+    'paver-installation'     => 'It all starts with the base.',
+    'artificial-turf'        => 'Green all year. No mowing.',
+    'irrigation-systems'     => 'Water where the roots are.',
+    'landscape-lighting'     => 'Your yard, after sunset.',
+    'tree-palm-services'     => 'Clean cuts, healthy crowns.',
+    'landscape-maintenance'  => 'Kept sharp, season after season.',
+  );
+  return isset($tags[$slug]) ? $tags[$slug] : 'Shade first. People always.';
+}

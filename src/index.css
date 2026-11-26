@@ -1,17 +1,28 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Brand fonts, self-hosted (paths relative to build/index.css) */
+@font-face { font-family: "Roboto"; font-weight: 300; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-light.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 400; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-regular.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 400; font-style: italic; font-display: swap; src: url("../assets/fonts/web/roboto-italic.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 500; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-medium.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 700; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-bold.woff2") format("woff2"); }
+@font-face { font-family: "Roboto"; font-weight: 700; font-style: italic; font-display: swap; src: url("../assets/fonts/web/roboto-bolditalic.woff2") format("woff2"); }
+@font-face { font-family: "Roboto Condensed"; font-weight: 400; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-condensed.woff2") format("woff2"); }
+@font-face { font-family: "Roboto Condensed"; font-weight: 700; font-style: normal; font-display: swap; src: url("../assets/fonts/web/roboto-boldcondensed.woff2") format("woff2"); }
+
 /*
   Brand tokens — "Propuesta Silvercrest Outdoor Spaces" (828 Marketing Solutions, Nov 2026).
   Palette names from the proposal; Tailwind names kept so templates don't change.
   Target share of color: Frenchman Rust 40% · Silver State 24% · Caliche 12% ·
   Copper Mesa 9% · Sandstone Glow 8% · Creosote 7%.
 
-  Typeface: Roboto (the proposal's institutional font) via Roboto Flex, whose width axis
-  gives the condensed headings and the extended labels from the same family:
-    font-display → condensed (headings, echoes the SILVERCREST wordmark)
-    font-wide    → extended (OUTDOOR SPACES-style labels, annotations)
-    font-sans    → regular Roboto (body copy)
+  Typeface (proposal p. 35): Roboto, the institutional font — Light, Regular and Bold — for
+  text, quotes, website and social. Self-hosted from assets/fonts/web (WOFF2, Latin subset of the
+  uploaded TTFs in assets/fonts/Roboto; regenerate there if glyphs are missing).
+    font-sans    → Roboto (body copy; font-light for long, large text)
+    font-display → Roboto Condensed Bold (headings, echoes the tall condensed SILVERCREST wordmark)
+    font-wide    → Roboto with wide tracking (OUTDOOR SPACES-style labels, annotations)
 */
 @theme {
   --color-rust: #65290f;        /* Frenchman Rust — primary: buttons, bands, footer */
@@ -22,14 +33,13 @@
   --color-slate: #73848e;       /* Silver State — secondary surfaces */
   --color-olive: #615f46;       /* Creosote — secondary accent */
   --color-cream: #f2ece4;       /* Caliche — page background */
+  --color-chalk: #fbf8f4;       /* Caliche, lightest — bright strips that lift off the cream */
   --color-sand: #e6dacb;        /* Caliche, deeper — soft section backgrounds, borders */
   --color-ink: #211a16;         /* text, dark overlays */
 
-  --font-sans: "Roboto Flex", "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Roboto Flex", "Roboto Condensed", ui-sans-serif, system-ui, sans-serif;
-  --font-display--font-variation-settings: "wdth" 40;
-  --font-wide: "Roboto Flex", "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-wide--font-variation-settings: "wdth" 151;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Roboto Condensed", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-wide: "Roboto", ui-sans-serif, system-ui, sans-serif;
 }
 
 /*
@@ -138,6 +148,12 @@
   .btn-light {
     --btn-fill: var(--color-peach);
     @apply bg-cream text-rust hover:text-ink focus-visible:text-ink;
+  }
+
+  /* Secondary on dark backgrounds / over photos: cream outline, fills cream on hover */
+  .btn-ghost-light {
+    --btn-fill: var(--color-cream);
+    @apply border-2 border-cream/70 bg-ink/20 text-cream backdrop-blur-sm hover:text-rust focus-visible:text-rust;
   }
 
   /* paginate_links() output on the projects archive */
@@ -377,11 +393,29 @@ html.lenis body {
 
   .annotation {
     font-family: var(--font-wide);
-    font-variation-settings: "wdth" 151;
     font-size: 0.6875rem;
     font-weight: 500;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
+  }
+
+  /* Strata as a background pattern (brand system, 01 Estratos): horizontal lines, all the same
+     weight, fading in from the top so text sits on clean ground. */
+  .strata-field {
+    --strata-color: rgb(218 147 103 / 0.16);
+    --strata-line: 6px;
+    --strata-gap: 14px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--strata-color) 0 var(--strata-line),
+      transparent var(--strata-line) calc(var(--strata-line) + var(--strata-gap))
+    );
+    -webkit-mask-image: linear-gradient(var(--strata-fade, to bottom), transparent 0%, #000 65%);
+    mask-image: linear-gradient(var(--strata-fade, to bottom), transparent 0%, #000 65%);
+  }
+  /* On light backgrounds (cream, dune): Copper Mesa, kept behind images, never under body text */
+  .strata-field-light {
+    --strata-color: rgb(188 117 63 / 0.22);
   }
 
   .cross-grid {
@@ -519,3 +553,121 @@ html.lenis body {
     color: var(--color-ink);
   }
 }
+
+/* Home services index: stacked preview photos crossfade (service-preview.js) */
+.service-preview__img {
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.5s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.service-preview__img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-preview__img { transition: none; transform: none; }
+}
+
+/* Process: step cards that stack on scroll (template-parts/process-steps.php, motion.js → initStackCards) */
+/* Glass, like the hero form: warm translucent tint + blur (tint per card: --card-bg) */
+.stack-card {
+  background-image: linear-gradient(160deg, var(--card-bg, rgb(33 26 22 / .5), rgb(33 26 22 / .38)));
+  border: 1px solid rgb(242 236 228 / 0.18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+/* Numbers: Caliche → Sandstone gradient (.text-sunset), like "Even in July." in the hero */
+.stack-card__num {
+  padding-bottom: 0.05em; /* keep the gradient clip from cutting descenders */
+}
+@media (width >= 64rem) {
+  .stack-card {
+    top: calc(7rem + var(--stack-i, 0) * 1.5rem);
+    transform-origin: 50% 0;
+  }
+}
+
+/* Home hero services ribbon (front-page.php): seamless drift left → right */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-ltr 60s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+.marquee__group {
+  display: flex;
+  flex-shrink: 0;
+}
+@keyframes marquee-ltr {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .marquee__track { animation: none; }
+  .marquee__group[aria-hidden="true"] { display: none; }
+}
+
+/*
+  Home hero fits the first screen (front-page.php .hero-fit): topbar + navbar + hero + services ribbon
+  = 100svh. Tall screens already fit; on shorter desktop screens the form, headline and ribbon tighten
+  step by step so the ribbon never drops below the fold.
+*/
+@media (width >= 64rem) and (height < 56rem) {
+  .hero-fit > section > .container-site { padding-block: 1.5rem; }
+  .hero-fit h1 { font-size: 3.75rem; }
+  .hero-fit .hero-glass { padding: 1.25rem 1.5rem; }
+  .hero-fit .hero-glass .cf-title { font-size: 1.625rem; }
+  .hero-fit .hero-glass > div { margin-top: 0.75rem; }
+  .hero-fit .cf-form > :not(:last-child) { margin-block-end: 0.6rem; }
+  .hero-fit .hero-glass textarea { height: 4rem; min-height: 0; }
+  .hero-fit .hero-glass .cf-alt { display: none; } /* the phone is already a button beside the headline */
+  .hero-fit .marquee a { padding-block: 0.875rem; }
+}
+@media (width >= 64rem) and (height < 48rem) {
+  .hero-fit h1 { font-size: 3.25rem; }
+  .hero-fit .hero-glass .cf-title { font-size: 1.375rem; }
+  .hero-fit .hero-glass .cf-title + p { display: none; }
+  .hero-fit .cf-form > :not(:last-child) { margin-block-end: 0.5rem; }
+  .hero-fit .hero-glass textarea { height: 2.75rem; }
+  .hero-fit .hero-glass .cf-input { padding-block: 0.375rem; }
+  .hero-fit .marquee a { padding-block: 0.625rem; }
+  .hero-fit .marquee svg { width: 1.5rem; height: 1.5rem; }
+}
+
+/* About seal (official PNG): a slow float instead of the old spinning lettering */
+.seal-float img {
+  animation: seal-float 7s ease-in-out infinite;
+}
+@keyframes seal-float {
+  50% { transform: translateY(-10px) rotate(-2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal-float img { animation: none; }
+}
+
+/* Google Translate (LanguageSwitcher): hide its banner, tooltip and highlight UI */
+body { top: 0 !important; }
+iframe.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-yAWNEb-L7lbkb { display: none !important; }
+.goog-text-highlight,
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q { background: none !important; box-shadow: none !important; }
+font { background: transparent !important; }
+
+/* reCAPTCHA v3: the floating badge is hidden; the form shows Google's required notice instead */
+.grecaptcha-badge { visibility: hidden !important; }

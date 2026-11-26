@@ -78,8 +78,11 @@ export default function Navbar() {
       <header className={`relative border-b border-sand bg-cream/95 backdrop-blur transition-shadow duration-300 ${scrolled ? "shadow-[0_8px_24px_-12px_rgb(35_26_21/0.25)]" : ""}`}>
         <div className="container-site flex h-18 items-center justify-between gap-6">
           <div className="flex items-center gap-6 xl:gap-8">
-            <a href={url("/")} aria-label={`${site.name} — Home`} className="shrink-0">
-              <Logo />
+            {/* Imagotipo at the top; once scrolled, the horizontal version (proposal p. 30) keeps the
+                name readable in less height. Both stay mounted so the swap is a crossfade. */}
+            <a href={url("/")} aria-label={`${site.name} — Home`} className="relative grid shrink-0 items-center">
+              <Logo className={`col-start-1 row-start-1 h-13 transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`} />
+              <Logo variant="horizontal" alt="" className={`col-start-1 row-start-1 h-7 transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`} />
             </a>
             <span className="hidden h-10 w-px bg-sand lg:block" aria-hidden="true" />
           </div>
